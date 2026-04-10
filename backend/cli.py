@@ -8,6 +8,10 @@ from datetime import datetime
 from rich.console import Console
 from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn
+from rich.traceback import install
+
+# 安装 rich 的异常追踪
+install(show_locals=True)
 
 console = Console()
 
@@ -24,6 +28,9 @@ def main():
   
   # 指定输出格式
   python cli.py "抓取知乎热榜" --format csv
+  
+  # 指定输出目录
+  python cli.py "抓取 GitHub Trending" -o ./my-data
   
   # 详细输出
   python cli.py "抓取 Product Hunt 今日产品" --verbose
@@ -47,7 +54,7 @@ def main():
     parser.add_argument(
         "-o", "--output",
         type=str,
-        help="输出文件路径（默认自动生成）"
+        help="输出目录路径（默认使用配置中的路径）"
     )
     
     parser.add_argument(
@@ -67,28 +74,40 @@ def main():
     
     console.print(f"\n[bold]任务指令:[/bold] {args.prompt}")
     console.print(f"[bold]输出格式:[/bold] {args.format}")
+    if args.output:
+        console.print(f"[bold]输出目录:[/bold] {args.output}")
     
-    # TODO: 实际执行爬虫任务
-    console.print("\n[yellow]⚠️  核心功能开发中...[/yellow]")
-    console.print("[dim]Phase 1: 项目脚手架搭建完成[/dim]")
-    console.print("[dim]Phase 2: 实现核心 Agent 逻辑[/dim]\n")
-    
-    # 示例：模拟任务执行
-    with Progress(
-        SpinnerColumn(),
-        TextColumn("[progress.description]{task.description}"),
-        console=console,
-    ) as progress:
-        task = progress.add_task("[cyan]正在初始化 Agent...", total=None)
-        # 这里将来会调用实际的爬虫逻辑
-        import time
-        time.sleep(1)
-        progress.update(task, description="[green]✓ 初始化完成[/green]")
-    
-    console.print("\n[bold green]✨ 脚手架搭建完成！[/bold green]")
-    console.print("[dim]下一步：实现 Planner、Navigator、Extractor Agent[/dim]\n")
-    
-    return 0
+    try:
+        # 导入 Crew（延迟导入以检查依赖）
+        from src.agents.crew import ScraperCrew
+        
+        # 创建并执行 Crew
+        crew = ScraperCrew(
+            user_input=args.prompt,
+            output_format=args.format,
+            output_dir=args.output
+        )
+        
+        console.print("\n")
+        result = crew.execute()
+        
+        # 显示结果
+        console.print("\n[bold green]✨ 任务完成！[/bold green]")
+        console.print(f"[dim]结果已保存，耗时 {result['duration_seconds']:.2f} 秒[/dim]\n")
+        
+        return 0
+        
+    except ImportError as e:
+        console.print(f"\n[yellow]⚠️  依赖未安装: {e}[/yellow]")
+        console.print("[dim]请运行: uv sync[/dim]\n")
+        return 1
+        
+    except Exception as e:
+        console.print(f"\n[bold red]❌ 任务执行失败[/bold red]")
+        console.print(f"[red]{str(e)}[/red]\n")
+        if args.verbose:
+            console.print_exception()
+        return 1
 
 
 if __name__ == "__main__":
