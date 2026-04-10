@@ -5,8 +5,8 @@
 
 from textwrap import dedent
 from langchain_openai import ChatOpenAI
+from langchain_core.tools import BaseTool
 from crewai import Agent
-from crewai_tools import BaseTool
 import pandas as pd
 from typing import Any
 
