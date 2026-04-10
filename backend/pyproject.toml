@@ -5,9 +5,8 @@ description = "自然语言驱动的智能爬虫 Agent"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    # 核心框架
+    # 核心框架（不安装 crewai-tools 以避免 lancedb 兼容问题）
     "crewai>=0.30.0",
-    "crewai-tools>=0.5.0",
     "langchain-openai>=0.0.5",
     
     # 浏览器控制
@@ -21,6 +20,7 @@ dependencies = [
     "fastapi>=0.109.0",
     "uvicorn[standard]>=0.27.0",
     "pydantic>=2.5.0",
+    "pydantic-settings>=2.1.0",
     
     # 数据存储
     "sqlalchemy>=2.0.25",
