@@ -1,0 +1,72 @@
+# AI Scraper Agent 配置文件
+
+# 应用设置
+app:
+  name: "AI Scraper Agent"
+  version: "0.1.0"
+  debug: false
+
+# LLM 设置
+llm:
+  provider: "openai"
+  model: "gpt-4"
+  temperature: 0.7
+  max_tokens: 4000
+  
+  # 备用模型
+  # provider: "claude"
+  # model: "claude-3-opus-20240229"
+
+# Agent 设置
+agent:
+  verbose: true
+  memory: true
+  max_iterations: 10
+  
+  # 反爬策略
+  anti_detection:
+    request_delay: 1.0  # 请求间隔（秒）
+    random_delay: true
+    max_delay: 3.0
+
+# 浏览器设置
+browser:
+  # agent-browser 配置
+  agent_browser:
+    enabled: true
+    path: "agent-browser"
+    timeout: 60
+    
+  # Playwright 配置
+  playwright:
+    headless: true
+    viewport:
+      width: 1920
+      height: 1080
+    user_agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
+
+# 数据存储
+storage:
+  database:
+    url: "sqlite:///./data/scraper.db"
+    
+  output:
+    dir: "./data/outputs"
+    formats:
+      - json
+      - csv
+      - excel
+
+# API 设置
+api:
+  host: "0.0.0.0"
+  port: 8000
+  cors_origins:
+    - "http://localhost:3000"
+    - "http://localhost:5173"
+
+# 日志设置
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "./data/logs/scraper.log"
