@@ -57,3 +57,5 @@ Thumbs.db
 node_modules/
 frontend/dist/
 frontend/.vite/
+QWEN.md
+qwen/
