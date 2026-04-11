@@ -2,7 +2,7 @@
 
 import os
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Literal
 from pydantic import Field
 from pydantic_settings import BaseSettings
 from dotenv import load_dotenv
@@ -14,9 +14,17 @@ load_dotenv()
 class Settings(BaseSettings):
     """应用配置"""
     
-    # OpenAI 配置
-    OPENAI_API_KEY: str = Field(..., description="OpenAI API Key")
-    OPENAI_MODEL: str = Field(default="gpt-4", description="OpenAI 模型")
+    # LLM 配置
+    LLM_PROVIDER: Literal["openai", "anthropic", "dashscope"] = Field(
+        default="openai",
+        description="LLM 提供商类型"
+    )
+    OPENAI_API_KEY: str = Field(..., description="API Key（兼容 OpenAI 格式）")
+    OPENAI_MODEL: str = Field(default="claude-3-opus-20240229", description="模型名称")
+    OPENAI_BASE_URL: Optional[str] = Field(
+        default=None,
+        description="API 基础 URL（用于兼容 OpenAI 格式的端点）"
+    )
     
     # 应用配置
     APP_ENV: str = Field(default="development", description="运行环境")

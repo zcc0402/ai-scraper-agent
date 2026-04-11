@@ -6,6 +6,7 @@ import logging
 
 from src.utils.config import settings
 from src.api.routes import router
+from src.api.llm_routes import router as llm_router
 
 # 配置日志
 logging.basicConfig(
@@ -36,6 +37,7 @@ app.add_middleware(
 
 # 注册路由
 app.include_router(router)
+app.include_router(llm_router)
 
 
 @app.get("/", tags=["根路径"])

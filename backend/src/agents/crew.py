@@ -5,14 +5,13 @@ from datetime import datetime
 from pathlib import Path
 
 from crewai import Crew, Process, Task
-from langchain_openai import ChatOpenAI
+from src.llm.provider import get_llm
 
 from src.agents.planner import PlannerAgent
 from src.agents.navigator import NavigatorAgent
 from src.agents.extractor import ExtractorAgent
 from src.agents.validator import ValidatorAgent
 from src.tools.agent_browser import AgentBrowserTool
-from src.agents.validator import DataValidationTool
 from src.utils.config import settings
 
 
@@ -33,30 +32,19 @@ class ScraperCrew:
         output_format: str = "json",
         output_dir: str | None = None
     ):
-        """
-        初始化 Crew
-        
-        Args:
-            user_input: 用户的自然语言指令
-            output_format: 输出格式 (json, csv, excel)
-            output_dir: 输出目录（默认从配置读取）
-        """
+        """初始化 Crew"""
         self.user_input = user_input
         self.output_format = output_format
         self.output_dir = output_dir or settings.DATA_OUTPUT_DIR
         
-        # 确保输出目录存在
         Path(self.output_dir).mkdir(parents=True, exist_ok=True)
         
-        # 初始化 LLM
-        self.llm = ChatOpenAI(
-            model=settings.OPENAI_MODEL,
-            temperature=0.7
-        )
-
+        # 使用统一 LLM 适配器
+        self.llm = get_llm(temperature=0.7)
+        
         # 初始化工具
         self.browser_tool = AgentBrowserTool()
-
+        
         # 初始化 Agents
         self.planner = PlannerAgent(self.llm).create()
         self.navigator = NavigatorAgent(self.llm, self.browser_tool).create()
