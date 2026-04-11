@@ -1,56 +1,64 @@
-"""统一 LLM 适配器 - 使用 litellm 支持所有主流模型
+"""统一 LLM 适配器 - 支持 OpenAI / Anthropic / 百炼
 
-litellm 会把所有模型调用统一转换为 OpenAI 格式
-这样 CrewAI 只需要对接一种格式，配置极其简单
-
-支持的提供商：
-- OpenAI (gpt-4, gpt-3.5-turbo)
-- Anthropic / 百炼 (claude-*, qwen-*)
-- 其他任何 litellm 支持的模型
+使用 litellm 统一适配，让 CrewAI 只需要对接一种格式
 """
 
 import os
 from typing import Optional
-from langchain_openai import ChatOpenAI
 from src.utils.config import settings
 
 
-def get_llm(
-    model: Optional[str] = None,
-    temperature: float = 0.7
-) -> ChatOpenAI:
+def get_llm(model: Optional[str] = None, temperature: float = 0.7):
     """
     获取 LLM 实例
     
-    使用 litellm 统一适配，返回 ChatOpenAI 实例
-    CrewAI 可以直接使用，无需关心底层是哪个模型
+    根据 LLM_PROVIDER 自动选择 OpenAI 或 Anthropic 客户端
+    百炼的 Anthropic 兼容模式也走这里
     
     Args:
-        model: 模型名称（覆盖配置中的默认值）
+        model: 模型名称
         temperature: 温度参数 (0-1)
         
     Returns:
-        ChatOpenAI 实例
+        LLM 实例 (兼容 CrewAI)
     """
     model_name = model or settings.OPENAI_MODEL
+    provider = settings.LLM_PROVIDER.lower()
     api_key = settings.OPENAI_API_KEY
     base_url = settings.OPENAI_BASE_URL
     
-    # litellm 会通过 OpenAI 兼容层自动处理所有模型
-    # 只需要配置正确的 base_url 和 api_key
-    return ChatOpenAI(
-        model=model_name,
-        temperature=temperature,
-        openai_api_key=api_key,
-        openai_api_base=base_url,
-    )
+    # 如果是 Anthropic 提供商（包括百炼的 Anthropic 兼容模式）
+    if provider == "anthropic" or "anthropic" in (base_url or "").lower():
+        from langchain_anthropic import ChatAnthropic
+        
+        return ChatAnthropic(
+            model=model_name,
+            temperature=temperature,
+            anthropic_api_key=api_key,
+            base_url=base_url,
+        )
+    
+    # 默认使用 OpenAI 兼容格式
+    else:
+        from langchain_openai import ChatOpenAI
+        
+        kwargs = {
+            "model": model_name,
+            "temperature": temperature,
+            "api_key": api_key,
+        }
+        
+        if base_url:
+            kwargs["base_url"] = base_url
+        
+        return ChatOpenAI(**kwargs)
 
 
-# 全局 LLM 实例（延迟初始化）
-_llm_instance: Optional[ChatOpenAI] = None
+# 全局 LLM 实例
+_llm_instance = None
 
 
-def get_default_llm() -> ChatOpenAI:
+def get_default_llm():
     """获取默认的 LLM 实例（单例）"""
     global _llm_instance
     if _llm_instance is None:
