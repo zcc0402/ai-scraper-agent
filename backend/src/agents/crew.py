@@ -53,16 +53,15 @@ class ScraperCrew:
             model=settings.OPENAI_MODEL,
             temperature=0.7
         )
-        
+
         # 初始化工具
         self.browser_tool = AgentBrowserTool()
-        self.validation_tool = DataValidationTool()
-        
+
         # 初始化 Agents
         self.planner = PlannerAgent(self.llm).create()
         self.navigator = NavigatorAgent(self.llm, self.browser_tool).create()
         self.extractor = ExtractorAgent(self.llm, self.browser_tool).create()
-        self.validator = ValidatorAgent(self.llm, self.validation_tool).create()
+        self.validator = ValidatorAgent(self.llm).create()
     
     def _create_tasks(self) -> list[Task]:
         """
