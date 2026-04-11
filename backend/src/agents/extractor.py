@@ -14,11 +14,20 @@ class DataExtractionTool(BaseTool):
     browser_tool: AgentBrowserTool = None
     
     def _run(self, instruction: str) -> str:
-        result = self.browser_tool.chat(f"从当前页面中提取数据：{instruction}")
-        if result.get("success"):
-            return result.get("output", "提取成功")
-        else:
-            return f"数据提取失败: {result.get('error', '未知错误')}"
+        """
+        智能数据提取：获取页面快照并提取数据
+        """
+        try:
+            # 获取页面快照
+            snapshot = self.browser_tool.snapshot()
+            
+            # 返回快照数据供 LLM 分析
+            import json
+            snapshot_str = json.dumps(snapshot.get('data', {}), ensure_ascii=False, indent=2)[:3000]
+            
+            return f"📄 页面快照已获取（前 3000 字符）:\n{snapshot_str}"
+        except Exception as e:
+            return f"❌ 数据提取失败: {str(e)}"
 
 
 class ExtractorAgent:
