@@ -1,85 +1,52 @@
-"""统一 LLM 适配器 - 完美适配百炼 (Anthropic 兼容模式)
+"""统一 LLM 适配器 - 使用 litellm 支持所有主流模型
 
-使用原生 anthropic SDK，确保与 Claude Code 行为一致
+litellm 会自动根据 endpoint 选择正确的 API 格式 (OpenAI/Anthropic/百炼)
 """
 
 import os
-from typing import Optional, Any
+from typing import Optional
 from src.utils.config import settings
-
-
-class BailianChatWrapper:
-    """
-    百炼 API 包装器 (Anthropic 兼容模式)
-    实现 LangChain 兼容的接口，以便 CrewAI 可以使用
-    """
-    
-    def __init__(self, model: str, temperature: float, api_key: str, base_url: str):
-        from anthropic import Anthropic
-        
-        self.model = model
-        self.temperature = temperature
-        self.client = Anthropic(
-            api_key=api_key,
-            base_url=base_url
-        )
-
-    def invoke(self, prompt: str, **kwargs) -> Any:
-        """
-        调用 LLM
-        返回一个兼容的对象，具有 .content 属性
-        """
-        message = self.client.messages.create(
-            model=self.model,
-            max_tokens=4096,
-            temperature=self.temperature,
-            messages=[{"role": "user", "content": prompt}]
-        )
-        
-        # 提取文本内容（兼容 ThinkingBlock 和 TextBlock）
-        text_parts = []
-        for block in message.content:
-            if hasattr(block, 'text'):
-                text_parts.append(block.text)
-            elif hasattr(block, 'thinking'):
-                text_parts.append(block.thinking)
-        
-        full_content = "\n".join(text_parts) if text_parts else str(message.content)
-        
-        # 返回一个简单对象模拟 LangChain 的 AIMessage
-        class Result:
-            content = full_content
-            
-        return Result()
 
 
 def get_llm(model: Optional[str] = None, temperature: float = 0.7):
     """
     获取 LLM 实例
     
-    针对百炼优化：直接使用原生 Anthropic 客户端
+    使用 litellm 统一适配，返回 CrewAI 兼容的 LLM 对象
+    
+    Args:
+        model: 模型名称
+        temperature: 温度参数 (0-1)
+        
+    Returns:
+        LLM 实例 (兼容 CrewAI)
     """
+    from crewai import LLM
+    
     model_name = model or settings.OPENAI_MODEL
     api_key = settings.OPENAI_API_KEY
     base_url = settings.OPENAI_BASE_URL
     
-    # 如果配置了 base_url，说明是使用兼容模式（如百炼）
-    if base_url:
-        return BailianChatWrapper(
-            model=model_name,
-            temperature=temperature,
-            api_key=api_key,
-            base_url=base_url
-        )
+    # 如果 base_url 包含 anthropic，说明是百炼的 Anthropic 兼容模式
+    # 需要告诉 litellm 使用 anthropic 格式
+    if base_url and "anthropic" in base_url.lower():
+        # 使用 anthropic/ 前缀让 litellm 知道使用 Anthropic API 格式
+        full_model = f"anthropic/{model_name}"
+    else:
+        full_model = model_name
     
-    # 否则使用标准的 LangChain OpenAI 客户端
-    from langchain_openai import ChatOpenAI
-    return ChatOpenAI(
-        model=model_name,
-        temperature=temperature,
-        api_key=api_key,
-        base_url=base_url
-    )
+    # 构建 LLM 配置
+    llm_config = {
+        "model": full_model,
+        "temperature": temperature,
+        "api_key": api_key,
+    }
+    
+    if base_url:
+        llm_config["base_url"] = base_url
+    
+    # 创建 LLM 实例
+    return LLM(**llm_config)
 
 
 # 全局 LLM 实例
