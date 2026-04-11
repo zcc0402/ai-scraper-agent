@@ -1,17 +1,13 @@
-// 任务状态管理 (Zustand)
-
 import { create } from 'zustand'
 import type { Task } from '@/types'
 import { taskApi } from '@/services/api'
 
 interface TaskState {
-  // 状态
   tasks: Task[]
   currentTask: Task | null
   loading: boolean
   error: string | null
 
-  // 操作
   fetchTasks: (status?: string) => Promise<void>
   createTask: (userInput: string, format?: 'json' | 'csv' | 'excel') => Promise<string>
   pollTaskStatus: (taskId: string) => Promise<void>
@@ -21,13 +17,11 @@ interface TaskState {
 }
 
 export const useTaskStore = create<TaskState>((set, get) => ({
-  // 初始状态
   tasks: [],
   currentTask: null,
   loading: false,
   error: null,
 
-  // 获取任务列表
   fetchTasks: async (status?: string) => {
     try {
       set({ loading: true, error: null })
@@ -38,7 +32,6 @@ export const useTaskStore = create<TaskState>((set, get) => ({
     }
   },
 
-  // 创建任务
   createTask: async (userInput: string, format: 'json' | 'csv' | 'excel' = 'json') => {
     try {
       set({ loading: true, error: null })
@@ -54,12 +47,10 @@ export const useTaskStore = create<TaskState>((set, get) => ({
     }
   },
 
-  // 轮询任务状态
   pollTaskStatus: async (taskId: string) => {
     try {
       const task = await taskApi.getTaskStatus(taskId)
       
-      // 更新当前任务
       const { currentTask, tasks } = get()
       const updatedTasks = tasks.map((t) => (t.task_id === taskId ? task : t))
       
@@ -72,11 +63,9 @@ export const useTaskStore = create<TaskState>((set, get) => ({
     }
   },
 
-  // 取消任务
   cancelTask: async (taskId: string) => {
     try {
       await taskApi.cancelTask(taskId)
-      // 刷新任务列表
       get().fetchTasks()
     } catch (error: any) {
       set({ error: error.message })
@@ -84,12 +73,10 @@ export const useTaskStore = create<TaskState>((set, get) => ({
     }
   },
 
-  // 设置当前任务
   setCurrentTask: (task: Task | null) => {
     set({ currentTask: task })
   },
 
-  // 清除错误
   clearError: () => {
     set({ error: null })
   },

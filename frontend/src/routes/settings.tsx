@@ -13,7 +13,6 @@ function SettingsPage() {
   const handleSubmit = async (values: any) => {
     try {
       setLoading(true)
-      // TODO: 保存设置
       message.success('设置已保存')
     } catch (error: any) {
       message.error('保存失败：' + error.message)
@@ -23,7 +22,7 @@ function SettingsPage() {
   }
 
   return (
-    <div className="p-8 max-w-3xl mx-auto">
+    <div className="max-w-3xl mx-auto">
       <h1 className="text-3xl font-bold mb-6">设置</h1>
 
       <Card className="mb-6" title="API 配置">
@@ -55,11 +54,17 @@ function SettingsPage() {
               <Select.Option value="claude-3-opus">Claude 3 Opus</Select.Option>
             </Select>
           </Form.Item>
+
+          <Form.Item>
+            <Button type="primary" htmlType="submit" loading={loading}>
+              保存设置
+            </Button>
+          </Form.Item>
         </Form>
       </Card>
 
       <Card title="爬虫默认设置">
-        <Form layout="vertical">
+        <Form layout="vertical" initialValues={{ default_timeout: 300 }}>
           <Form.Item label="默认输出格式" name="default_format">
             <Select>
               <Select.Option value="json">JSON</Select.Option>
@@ -69,13 +74,7 @@ function SettingsPage() {
           </Form.Item>
 
           <Form.Item label="默认超时时间（秒）" name="default_timeout">
-            <Input type="number" defaultValue={300} />
-          </Form.Item>
-
-          <Form.Item>
-            <Button type="primary" loading={loading} onClick={() => form.submit()}>
-              保存设置
-            </Button>
+            <Input type="number" />
           </Form.Item>
         </Form>
       </Card>
