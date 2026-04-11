@@ -67,6 +67,7 @@ class Settings(BaseSettings):
     # agent-browser 配置
     AGENT_BROWSER_PATH: str = Field(default="agent-browser", description="agent-browser 路径")
     AGENT_BROWSER_TIMEOUT: int = Field(default=60, description="agent-browser 超时时间")
+    AI_GATEWAY_API_KEY: Optional[str] = Field(default=None, description="AI Gateway API Key (agent-browser chat 需要)")
     
     class Config:
         env_file = ".env"
