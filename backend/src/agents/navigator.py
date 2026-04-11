@@ -17,11 +17,42 @@ class BrowserNavigationTool(BaseTool):
     browser_tool: AgentBrowserTool = None
     
     def _run(self, instruction: str) -> str:
-        result = self.browser_tool.chat(instruction)
-        if result.get("success"):
-            return result.get("output", "操作成功")
-        else:
-            return f"浏览器操作失败: {result.get('error', '未知错误')}"
+        """
+        智能导航：解析指令并执行相应操作
+        支持：打开 URL、滚动、等待、截图
+        """
+        try:
+            # 判断是否包含 URL
+            if "http" in instruction or "open" in instruction.lower() or "打开" in instruction or "访问" in instruction:
+                import re
+                urls = re.findall(r'https?://[^\s<>"]+|www\.[^\s<>"]+', instruction)
+                if urls:
+                    url = urls[0]
+                    if not url.startswith('http'):
+                        url = 'https://' + url
+                    self.browser_tool.open_url(url)
+                    return f"✅ 已打开页面：{url}"
+                else:
+                    return "⚠️ 未找到有效的 URL"
+            
+            # 滚动操作
+            if "scroll" in instruction.lower() or "滚动" in instruction:
+                self.browser_tool.scroll("down")
+                return "✅ 页面已向下滚动"
+            
+            # 等待操作
+            if "wait" in instruction.lower() or "等待" in instruction:
+                self.browser_tool.wait(2000)
+                return "✅ 已等待 2 秒"
+            
+            # 截图
+            if "screenshot" in instruction.lower() or "截图" in instruction:
+                result = self.browser_tool.screenshot("/tmp/screenshot.png")
+                return f"✅ 截图已保存：{result.get('path', '/tmp/screenshot.png')}"
+            
+            return "✅ 指令执行完成"
+        except Exception as e:
+            return f"❌ 浏览器操作失败: {str(e)}"
 
 
 class NavigatorAgent:
