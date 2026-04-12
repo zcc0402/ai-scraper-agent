@@ -1,173 +1,113 @@
-import { Card, Form, Input, Button, Select, message, Switch } from 'antd'
-import { SaveOutlined, ApiOutlined, DatabaseOutlined, BellOutlined } from '@ant-design/icons'
-import { useState } from 'react'
+import { createFileRoute } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
+import { useTheme } from 'next-themes'
+import { useState, useEffect } from 'react'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Switch } from '@/components/ui/switch'
+import { Label } from '@/components/ui/label'
+import { Moon, Sun, Monitor, Globe, Palette, Database } from 'lucide-react'
+import i18n from '@/i18n'
 
-export function SettingsPage() {
-  const [loading, setLoading] = useState(false)
-  const [form] = Form.useForm()
+function SettingsPage() {
+  const { t } = useTranslation()
+  const { theme, setTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
 
-  const handleSubmit = async (values: any) => {
-    try {
-      setLoading(true)
-      // TODO: 保存设置到后端
-      message.success('设置已保存')
-    } catch (error: any) {
-      message.error('保存失败：' + error.message)
-    } finally {
-      setLoading(false)
-    }
-  }
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) return null
 
   return (
-    <div className="text-white max-w-4xl mx-auto">
-      <div className="mb-10">
-        <h1 className="text-3xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-purple-200">
-          设置
-        </h1>
-        <p className="text-blue-100/60">配置 API、模型和系统参数</p>
+    <div className="max-w-2xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="text-center space-y-2 mb-8">
+        <h1 className="text-3xl font-bold">{t('settings.title')}</h1>
+        <p className="text-muted-foreground">{t('home.subtitle')}</p>
       </div>
 
-      {/* API 配置 */}
-      <div className="glass-card p-8 mb-8">
-        <h2 className="text-xl font-bold mb-6 text-white flex items-center gap-3">
-          <div className="p-2 bg-blue-500/20 rounded-xl">
-            <ApiOutlined className="text-blue-300" />
+      {/* Appearance */}
+      <Card className="glass-card bg-card/50">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-xl">
+            <Palette className="w-5 h-5 text-primary" />
+            {t('settings.theme')}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-3 gap-4">
+            {[
+              { id: 'light', icon: Sun, label: t('settings.light') },
+              { id: 'dark', icon: Moon, label: t('settings.dark') },
+              { id: 'system', icon: Monitor, label: t('settings.system') },
+            ].map((item) => (
+              <button
+                key={item.id}
+                onClick={() => setTheme(item.id)}
+                className={`flex flex-col items-center gap-3 p-4 rounded-xl border transition-all duration-300 ${
+                  theme === item.id
+                    ? 'bg-primary/10 border-primary text-primary'
+                    : 'bg-card/50 border-border/50 text-muted-foreground hover:bg-accent/50'
+                }`}
+              >
+                <item.icon className="w-6 h-6" />
+                <span className="text-sm font-medium">{item.label}</span>
+              </button>
+            ))}
           </div>
-          API 配置
-        </h2>
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={handleSubmit}
-          initialValues={{
-            api_base_url: 'http://localhost:8000',
-            openai_model: 'qwen3.6-plus',
-          }}
-        >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Form.Item
-              label={<span className="text-blue-200">API 地址</span>}
-              name="api_base_url"
-              rules={[{ required: true, message: '请输入 API 地址' }]}
-            >
-              <Input 
-                placeholder="http://localhost:8000" 
-                className="bg-white/5 border-white/10 text-white rounded-xl"
-              />
-            </Form.Item>
+        </CardContent>
+      </Card>
 
-            <Form.Item
-              label={<span className="text-blue-200">默认模型</span>}
-              name="openai_model"
-              rules={[{ required: true, message: '请选择模型' }]}
-            >
-              <Select
-                className="w-full"
-                options={[
-                  { value: 'qwen3.6-plus', label: 'Qwen 3.6 Plus (百炼)' },
-                  { value: 'gpt-4o', label: 'GPT-4o (OpenAI)' },
-                  { value: 'claude-3-5-sonnet-20241022', label: 'Claude 3.5 Sonnet' },
-                ]}
-                dropdownStyle={{ 
-                  background: 'rgba(15, 23, 42, 0.9)', 
-                  backdropFilter: 'blur(10px)',
-                  borderRadius: '12px'
-                }}
-              />
-            </Form.Item>
-          </div>
+      {/* Language */}
+      <Card className="glass-card bg-card/50">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-xl">
+            <Globe className="w-5 h-5 text-primary" />
+            {t('settings.language')}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Select
+            value={i18n.language}
+            onValueChange={(value) => i18n.changeLanguage(value)}
+          >
+            <SelectTrigger className="bg-background/50 border-border/50">
+              <SelectValue placeholder="Select language" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="zh">中文 (Chinese)</SelectItem>
+              <SelectItem value="en">English</SelectItem>
+            </SelectContent>
+          </Select>
+        </CardContent>
+      </Card>
 
-          <Form.Item className="mt-6">
-            <Button 
-              type="primary" 
-              htmlType="submit" 
-              loading={loading}
-              icon={<SaveOutlined />}
-              className="bg-gradient-to-r from-blue-500 to-purple-600 border-none rounded-xl shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 hover:scale-105 transition-all duration-300"
-            >
-              保存设置
-            </Button>
-          </Form.Item>
-        </Form>
-      </div>
-
-      {/* 爬虫设置 */}
-      <div className="glass-card p-8 mb-8">
-        <h2 className="text-xl font-bold mb-6 text-white flex items-center gap-3">
-          <div className="p-2 bg-purple-500/20 rounded-xl">
-            <DatabaseOutlined className="text-purple-300" />
-          </div>
-          爬虫默认设置
-        </h2>
-        <Form layout="vertical" initialValues={{ default_timeout: 300, auto_retry: true }}>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Form.Item 
-              label={<span className="text-blue-200">默认输出格式</span>} 
-              name="default_format"
-            >
-              <Select
-                className="w-full"
-                options={[
-                  { value: 'json', label: 'JSON' },
-                  { value: 'csv', label: 'CSV' },
-                  { value: 'excel', label: 'Excel' },
-                ]}
-                dropdownStyle={{ 
-                  background: 'rgba(15, 23, 42, 0.9)', 
-                  backdropFilter: 'blur(10px)',
-                  borderRadius: '12px'
-                }}
-              />
-            </Form.Item>
-
-            <Form.Item 
-              label={<span className="text-blue-200">默认超时时间（秒）</span>} 
-              name="default_timeout"
-            >
-              <Input 
-                type="number" 
-                className="bg-white/5 border-white/10 text-white rounded-xl"
-              />
-            </Form.Item>
-          </div>
-
-          <Form.Item name="auto_retry" valuePropName="checked">
-            <div className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/10">
-              <div>
-                <div className="text-white font-medium">自动重试</div>
-                <div className="text-blue-100/60 text-sm">任务失败时自动重试</div>
-              </div>
-              <Switch className="bg-blue-500" />
-            </div>
-          </Form.Item>
-        </Form>
-      </div>
-
-      {/* 通知设置 */}
-      <div className="glass-card p-8">
-        <h2 className="text-xl font-bold mb-6 text-white flex items-center gap-3">
-          <div className="p-2 bg-green-500/20 rounded-xl">
-            <BellOutlined className="text-green-300" />
-          </div>
-          通知设置
-        </h2>
-        <div className="space-y-4">
-          <div className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all duration-300">
+      {/* API Config (Placeholder) */}
+      <Card className="glass-card bg-card/50">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-xl">
+            <Database className="w-5 h-5 text-primary" />
+            {t('settings.api')}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between">
             <div>
-              <div className="text-white font-medium">任务完成通知</div>
-              <div className="text-blue-100/60 text-sm">任务完成后发送通知</div>
+              <Label className="text-base font-medium">Auto-Retry</Label>
+              <p className="text-sm text-muted-foreground">Automatically retry failed tasks</p>
             </div>
-            <Switch defaultChecked className="bg-green-500" />
+            <Switch defaultChecked />
           </div>
-          <div className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all duration-300">
-            <div>
-              <div className="text-white font-medium">任务失败通知</div>
-              <div className="text-blue-100/60 text-sm">任务失败时发送通知</div>
-            </div>
-            <Switch defaultChecked className="bg-green-500" />
-          </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }
+
+export { SettingsPage }
+
+export const Route = createFileRoute('/settings')({
+  component: SettingsPage,
+})

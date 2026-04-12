@@ -1,0 +1,22 @@
+{
+  "prompt_templates": {
+    "planner": "默认规划师 Prompt",
+    "navigator": "默认导航员 Prompt",
+    "extractor": "增强的提取器 Prompt"
+  },
+  "tool_params": {
+    "timeout": 90,
+    "max_retries": 5,
+    "request_delay": 1.0
+  },
+  "anti_detection": {
+    "enabled": true,
+    "random_delay": true
+  },
+  "metrics": {
+    "success_rate": 0.0,
+    "avg_duration": 74.52920933333333,
+    "data_quality_score": 0.0,
+    "total_tasks": 16
+  }
+}

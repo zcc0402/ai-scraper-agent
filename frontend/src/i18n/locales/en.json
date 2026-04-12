@@ -1,0 +1,83 @@
+{
+  "common": {
+    "title": "AI Scraper Agent",
+    "subtitle": "用自然语言描述你想抓取的数据，AI 自动完成爬取任务",
+    "loading": "加载中...",
+    "error": "发生错误",
+    "success": "成功",
+    "confirm": "确认",
+    "cancel": "取消",
+    "save": "保存",
+    "delete": "删除"
+  },
+  "nav": {
+    "home": "首页",
+    "tasks": "任务",
+    "create": "创建",
+    "settings": "设置"
+  },
+  "home": {
+    "totalTasks": "总任务数",
+    "completed": "已完成",
+    "running": "进行中",
+    "failed": "失败",
+    "startNow": "开始创建任务",
+    "viewHistory": "查看历史任务",
+    "features": {
+      "title": "核心能力",
+      "nlp": {
+        "title": "自然语言驱动",
+        "desc": "无需编写代码，用大白话告诉 AI 你想抓取什么。"
+      },
+      "agents": {
+        "title": "多角色协作",
+        "desc": "规划、导航、提取，多 Agent 像团队一样分工。"
+      },
+      "adaptive": {
+        "title": "智能抗变更",
+        "desc": "网站改版也能自动适应，无需维护规则。"
+      }
+    }
+  },
+  "create": {
+    "title": "创建新任务",
+    "placeholder": "例如：帮我抓取 Hacker News 前 10 条标题...",
+    "instruction": "任务指令",
+    "format": "输出格式",
+    "submit": "开始任务",
+    "examples": {
+      "title": "示例指令",
+      "list": [
+        "帮我抓取 Hacker News 前 10 条标题和链接",
+        "抓取知乎热榜前 20 条的标题、回答数",
+        "抓取 GitHub Trending 今日热门项目"
+      ]
+    }
+  },
+  "tasks": {
+    "title": "任务列表",
+    "search": "搜索任务...",
+    "filter": "筛选状态",
+    "newTask": "新建任务",
+    "view": "查看",
+    "status": {
+      "pending": "等待中",
+      "planning": "规划中",
+      "navigating": "导航中",
+      "extracting": "提取中",
+      "completed": "已完成",
+      "failed": "失败",
+      "cancelled": "已取消"
+    }
+  },
+  "settings": {
+    "title": "设置",
+    "api": "API 配置",
+    "crawler": "爬虫设置",
+    "language": "语言设置",
+    "theme": "主题设置",
+    "light": "浅色模式",
+    "dark": "深色模式",
+    "system": "跟随系统"
+  }
+}

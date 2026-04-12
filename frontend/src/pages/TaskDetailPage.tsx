@@ -1,198 +1,158 @@
-import { Card, Descriptions, Tag, Button, Space, Result, Spin, Empty } from 'antd'
-import { ArrowLeftOutlined, DownloadOutlined, CheckCircleOutlined, LoadingOutlined, CloseCircleOutlined } from '@ant-design/icons'
-import { Link } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
+import { useEffect, useState } from 'react'
 import { useTaskStore } from '@/stores/useTaskStore'
-import { useEffect } from 'react'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Link } from '@tanstack/react-router'
+import { ArrowLeft, Download, CheckCircle2, Loader2, AlertCircle, Clock } from 'lucide-react'
 
-const statusMap: Record<string, { color: string; text: string; icon: React.ReactNode }> = {
-  pending: { color: 'default', text: '等待中', icon: <span className="text-gray-400">⏳</span> },
-  planning: { color: 'processing', text: '规划中', icon: <LoadingOutlined className="text-blue-400" /> },
-  navigating: { color: 'processing', text: '导航中', icon: <LoadingOutlined className="text-blue-400" /> },
-  extracting: { color: 'processing', text: '提取中', icon: <LoadingOutlined className="text-blue-400" /> },
-  validating: { color: 'warning', text: '验证中', icon: <LoadingOutlined className="text-yellow-400" /> },
-  exporting: { color: 'warning', text: '导出中', icon: <LoadingOutlined className="text-yellow-400" /> },
-  completed: { color: 'success', text: '已完成', icon: <CheckCircleOutlined className="text-green-400" /> },
-  failed: { color: 'error', text: '失败', icon: <CloseCircleOutlined className="text-red-400" /> },
-  retrying: { color: 'warning', text: '重试中', icon: <LoadingOutlined className="text-yellow-400" /> },
-  cancelled: { color: 'default', text: '已取消', icon: <CloseCircleOutlined className="text-gray-400" /> },
-}
-
-export function TaskDetailPage({ taskId }: { taskId: string }) {
-  const { currentTask, pollTaskStatus, loading } = useTaskStore()
+function TaskDetailPage() {
+  const { taskId } = Route.useParams()
+  const { t } = useTranslation()
+  const { currentTask, pollTaskStatus } = useTaskStore()
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     pollTaskStatus(taskId)
-    const interval = setInterval(() => {
-      pollTaskStatus(taskId)
-    }, 3000)
-
+    const interval = setInterval(() => pollTaskStatus(taskId), 3000)
+    setMounted(true)
     return () => clearInterval(interval)
   }, [taskId, pollTaskStatus])
 
-  if (!currentTask) {
+  if (!mounted || !currentTask) {
     return (
       <div className="flex justify-center items-center h-64">
-        <Spin size="large" />
+        <Loader2 className="w-8 h-8 text-primary animate-spin" />
       </div>
     )
   }
 
-  const statusConfig = statusMap[currentTask.status] || { 
-    color: 'default', 
-    text: currentTask.status,
-    icon: null 
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'completed': return <CheckCircle2 className="w-6 h-6 text-green-400" />
+      case 'failed': return <AlertCircle className="w-6 h-6 text-red-400" />
+      case 'cancelled': return <AlertCircle className="w-6 h-6 text-muted-foreground" />
+      default: return <Loader2 className="w-6 h-6 text-blue-400 animate-spin" />
+    }
   }
 
   const isCompleted = currentTask.status === 'completed'
   const isRunning = ['pending', 'planning', 'navigating', 'extracting', 'validating', 'exporting', 'retrying'].includes(currentTask.status)
-  const isFailed = currentTask.status === 'failed'
 
   return (
-    <div className="text-white max-w-5xl mx-auto">
-      <div className="mb-8">
+    <div className="max-w-4xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      {/* Header */}
+      <div className="flex items-center gap-4 mb-8">
         <Link to="/tasks">
-          <Button 
-            icon={<ArrowLeftOutlined />} 
-            className="bg-white/5 border-white/10 text-white rounded-xl hover:bg-white/10 transition-all duration-300"
-          >
-            返回列表
+          <Button variant="ghost" size="icon" className="rounded-full">
+            <ArrowLeft className="w-5 h-5" />
           </Button>
         </Link>
+        <div>
+          <h1 className="text-2xl font-bold">{t('tasks.title')}</h1>
+          <p className="text-sm text-muted-foreground font-mono">{taskId}</p>
+        </div>
       </div>
 
       {/* Status Card */}
-      <div className={`glass-card p-8 mb-8 ${isCompleted ? 'border-green-400/30' : isFailed ? 'border-red-400/30' : 'border-blue-400/30'}`}>
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-2xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-purple-200">
-              任务详情
-            </h1>
-            <p className="text-blue-100/60 text-sm">ID: {currentTask.task_id}</p>
+      <Card className={`glass-card border-2 ${isCompleted ? 'border-green-500/30' : isRunning ? 'border-blue-500/30' : 'border-red-500/30'}`}>
+        <CardContent className="pt-6">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              {getStatusIcon(currentTask.status)}
+              <div>
+                <h2 className="text-xl font-semibold">
+                  {t(`tasks.status.${currentTask.status}`) || currentTask.status}
+                </h2>
+                <p className="text-sm text-muted-foreground">{currentTask.progress}</p>
+              </div>
+            </div>
           </div>
-          <div className="flex items-center gap-3">
-            {statusConfig.icon}
-            <Tag 
-              color={statusConfig.color} 
-              className="px-4 py-2 rounded-full text-base border-white/10 bg-white/5"
-            >
-              {statusConfig.text}
-            </Tag>
-          </div>
-        </div>
 
-        <Descriptions column={2} bordered className="custom-descriptions">
-          <Descriptions.Item label={<span className="text-blue-200">任务指令</span>} span={2}>
-            <span className="text-white font-medium">{currentTask.user_input}</span>
-          </Descriptions.Item>
-          <Descriptions.Item label={<span className="text-blue-200">创建时间</span>}>
-            <span className="text-blue-100/70">{new Date(currentTask.created_at).toLocaleString('zh-CN')}</span>
-          </Descriptions.Item>
-          <Descriptions.Item label={<span className="text-blue-200">完成时间</span>}>
-            <span className="text-blue-100/70">
-              {currentTask.completed_at ? new Date(currentTask.completed_at).toLocaleString('zh-CN') : '-'}
-            </span>
-          </Descriptions.Item>
-          {currentTask.progress && (
-            <Descriptions.Item label={<span className="text-blue-200">当前进度</span>} span={2}>
-              <span className="text-blue-100/80">{currentTask.progress}</span>
-            </Descriptions.Item>
-          )}
-        </Descriptions>
-      </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+            <div className="space-y-1">
+              <p className="text-muted-foreground">{t('create.instruction')}</p>
+              <p className="font-medium">{currentTask.user_input}</p>
+            </div>
+            <div className="space-y-1">
+              <p className="text-muted-foreground">{t('tasks.filter')}</p>
+              <p className="font-medium flex items-center gap-1">
+                <Clock className="w-4 h-4" />
+                {new Date(currentTask.created_at).toLocaleString()}
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Result Section */}
       {isCompleted && currentTask.result && (
-        <div className="glass-card p-8 mb-8 border-green-400/20">
-          <h2 className="text-xl font-bold mb-6 text-green-300 flex items-center gap-2">
-            <CheckCircleOutlined />
-            数据概览
-          </h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-            <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-              <div className="text-blue-100/60 text-sm mb-1">总记录数</div>
-              <div className="text-3xl font-bold text-white">
-                {currentTask.result.statistics?.total_records || '-'}
+        <Card className="glass-card bg-card/50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-xl">
+              <CheckCircle2 className="w-5 h-5 text-green-400" />
+              {t('common.success')}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="p-4 rounded-xl bg-background/50 border border-border/50">
+                <p className="text-sm text-muted-foreground mb-1">{t('home.totalTasks')}</p>
+                <p className="text-2xl font-bold">
+                  {currentTask.result.statistics?.total_records || '-'}
+                </p>
+              </div>
+              <div className="p-4 rounded-xl bg-background/50 border border-border/50">
+                <p className="text-sm text-muted-foreground mb-1">{t('create.format')}</p>
+                <p className="text-2xl font-bold uppercase">
+                  {currentTask.result.output_file?.split('.').pop() || 'JSON'}
+                </p>
+              </div>
+              <div className="p-4 rounded-xl bg-background/50 border border-border/50">
+                <p className="text-sm text-muted-foreground mb-1">{t('tasks.status.completed')}</p>
+                <p className="text-2xl font-bold text-green-400 flex items-center gap-2">
+                  <CheckCircle2 className="w-5 h-5" />
+                  {t('common.success')}
+                </p>
               </div>
             </div>
-            <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-              <div className="text-blue-100/60 text-sm mb-1">输出格式</div>
-              <div className="text-2xl font-bold text-blue-300 uppercase">
-                {currentTask.result.output_file?.split('.').pop() || 'JSON'}
+
+            <div className="flex flex-wrap gap-3">
+              <Button className="shadow-lg shadow-green-500/20">
+                <Download className="w-4 h-4 mr-2" />
+                {t('common.confirm')}
+              </Button>
+            </div>
+
+            <div className="space-y-2">
+              <h3 className="text-lg font-semibold">{t('tasks.filter')}</h3>
+              <div className="bg-background/50 rounded-xl p-4 border border-border/50 max-h-96 overflow-auto font-mono text-sm">
+                <pre className="text-muted-foreground whitespace-pre-wrap">
+                  {JSON.stringify(currentTask.result.data?.slice(0, 10), null, 2)}
+                </pre>
               </div>
             </div>
-            <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-              <div className="text-blue-100/60 text-sm mb-1">状态</div>
-              <div className="text-2xl font-bold text-green-400 flex items-center gap-2">
-                <CheckCircleOutlined /> 完成
-              </div>
-            </div>
-          </div>
-
-          <Space size="middle">
-            <Button 
-              type="primary" 
-              icon={<DownloadOutlined />}
-              className="bg-gradient-to-r from-green-500 to-emerald-600 border-none rounded-xl shadow-lg shadow-green-500/30 hover:shadow-green-500/50 hover:scale-105 transition-all duration-300"
-            >
-              下载数据
-            </Button>
-          </Space>
-        </div>
-      )}
-
-      {/* Data Preview */}
-      {isCompleted && currentTask.result?.data && (
-        <div className="glass-card p-8 mb-8">
-          <h2 className="text-xl font-bold mb-6 text-blue-300">数据预览（前 10 条）</h2>
-          <div className="bg-black/30 rounded-xl p-6 border border-white/10 max-h-96 overflow-auto">
-            <pre className="text-blue-100/80 text-sm font-mono whitespace-pre-wrap">
-              {JSON.stringify(currentTask.result.data.slice(0, 10), null, 2)}
-            </pre>
-          </div>
-        </div>
-      )}
-
-      {/* Failed State */}
-      {isFailed && (
-        <div className="glass-card p-8 mb-8 border-red-400/20">
-          <Result
-            status="error"
-            title={<span className="text-red-400">任务执行失败</span>}
-            subTitle={
-              <div className="text-red-200/60 mt-2 p-4 rounded-lg bg-red-500/10 border border-red-400/20 text-left">
-                {currentTask.error || '未知错误'}
-              </div>
-            }
-            extra={
-              <Link to="/tasks/create">
-                <Button 
-                  type="primary"
-                  className="bg-gradient-to-r from-blue-500 to-purple-600 border-none rounded-xl shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 hover:scale-105 transition-all duration-300"
-                >
-                  重新创建任务
-                </Button>
-              </Link>
-            }
-          />
-        </div>
+          </CardContent>
+        </Card>
       )}
 
       {/* Running State */}
       {isRunning && (
-        <div className="glass-card p-8 mb-8 border-blue-400/20">
-          <Result
-            status="info"
-            icon={<LoadingOutlined className="text-blue-400 text-4xl" />}
-            title={<span className="text-blue-300">任务执行中</span>}
-            subTitle={
-              <div className="text-blue-200/60 mt-2">
-                {currentTask.progress || '请稍候，AI 正在为您抓取数据...'}
-              </div>
-            }
-          />
-        </div>
+        <Card className="glass-card bg-card/50 text-center py-12">
+          <CardContent>
+            <Loader2 className="w-12 h-12 text-blue-400 animate-spin mx-auto mb-4" />
+            <h3 className="text-xl font-semibold mb-2">{t('tasks.status.planning')}</h3>
+            <p className="text-muted-foreground">{currentTask.progress || t('common.loading')}</p>
+          </CardContent>
+        </Card>
       )}
     </div>
   )
 }
+
+export { TaskDetailPage }
+
+export const Route = createFileRoute('/tasks/$taskId')({
+  component: TaskDetailPage,
+})

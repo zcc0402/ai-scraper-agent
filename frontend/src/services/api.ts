@@ -5,7 +5,7 @@ import type { Task, CreateTaskRequest, ApiResponse } from '@/types'
 
 // 创建 Axios 实例
 const api: AxiosInstance = axios.create({
-  baseURL: '/api',
+  baseURL: 'http://100.98.160.29:8000/api',
   timeout: 60000,
   headers: {
     'Content-Type': 'application/json',
