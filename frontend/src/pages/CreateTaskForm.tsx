@@ -1,5 +1,5 @@
-import { Form, Input, Button, Card, message, Select } from 'antd'
-import { RocketOutlined, SendOutlined, SparklesOutlined } from '@ant-design/icons'
+import { Form, Input, Button, message, Select } from 'antd'
+import { RocketOutlined, SendOutlined, StarOutlined } from '@ant-design/icons'
 import { useNavigate } from '@tanstack/react-router'
 import { useTaskStore } from '@/stores/useTaskStore'
 import { useState } from 'react'
@@ -46,17 +46,17 @@ export function CreateTaskForm() {
           <div className="mb-6 relative">
             <div className="flex items-center justify-between mb-2">
               <label className="text-blue-200 font-medium flex items-center gap-2">
-                <SparklesOutlined className="text-yellow-400" />
+                <StarOutlined className="text-yellow-400" />
                 任务指令
               </label>
             </div>
             <Input.TextArea
+              name="user_input"
               rows={5}
               placeholder="例如：帮我抓取 Hacker News 前 10 条标题和链接..."
               className="bg-white/5 border-white/10 text-white placeholder:text-blue-200/40 rounded-xl p-4 text-lg focus:bg-white/10 focus:border-blue-400/50 transition-all duration-300"
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
-              {...form.getFieldProps('user_input')}
             />
           </div>
 

@@ -1,8 +1,8 @@
 import { createRootRoute, Outlet } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/router-devtools'
-import { ConfigProvider } from 'antd'
-import zhCN from 'antd/locale/zh_CN'
-import { AppLayout } from '@/components/AppLayout'
+import { Navbar } from '@/components/Navbar'
+import { ThemeProvider } from '@/providers/ThemeProvider'
+import '@/i18n'
 
 export const Route = createRootRoute({
   component: RootComponent,
@@ -10,19 +10,19 @@ export const Route = createRootRoute({
 
 function RootComponent() {
   return (
-    <ConfigProvider
-      locale={zhCN}
-      theme={{
-        token: {
-          colorPrimary: '#1677ff',
-          borderRadius: 6,
-        },
-      }}
-    >
-      <div className="min-h-screen bg-gray-50">
-        <AppLayout />
+    <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+      <div className="min-h-screen bg-background text-foreground font-sans antialiased">
+        {/* Background Gradient */}
+        <div className="fixed inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-900/20 via-background to-background" />
+        
+        <Navbar />
+        
+        <main className="container mx-auto px-4 pt-20 pb-24 md:pt-24 md:pb-8 max-w-7xl">
+          <Outlet />
+        </main>
+
         <TanStackRouterDevtools position="bottom-right" />
       </div>
-    </ConfigProvider>
+    </ThemeProvider>
   )
 }

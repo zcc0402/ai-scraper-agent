@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { CreateTaskForm } from '@/pages/CreateTaskForm'
+import { CreateTaskPage } from '@/pages/CreateTaskPage'
 
 export const Route = createFileRoute('/tasks/create')({
-  component: CreateTaskForm,
+  component: CreateTaskPage,
 })

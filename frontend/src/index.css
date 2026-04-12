@@ -1,191 +1,120 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-/* 全局样式 - 2026 现代设计趋势 */
+@theme {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+}
+
+:root {
+  --background: 222.2 84% 4.9%;
+  --foreground: 210 40% 98%;
+  --card: 222.2 84% 4.9%;
+  --card-foreground: 210 40% 98%;
+  --popover: 222.2 84% 4.9%;
+  --popover-foreground: 210 40% 98%;
+  --primary: 217.2 91.2% 59.8%;
+  --primary-foreground: 222.2 47.4% 11.2%;
+  --secondary: 217.2 32.6% 17.5%;
+  --secondary-foreground: 210 40% 98%;
+  --muted: 217.2 32.6% 17.5%;
+  --muted-foreground: 215 20.2% 65.1%;
+  --accent: 217.2 32.6% 17.5%;
+  --accent-foreground: 210 40% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 217.2 32.6% 17.5%;
+  --input: 217.2 32.6% 17.5%;
+  --ring: 224.3 76.3% 48%;
+}
+
+.light {
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 84% 4.9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222.2 84% 4.9%;
+  --primary: 221.2 83.2% 53.3%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 210 40% 96.1%;
+  --secondary-foreground: 222.2 47.4% 11.2%;
+  --muted: 210 40% 96.1%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+  --accent: 210 40% 96.1%;
+  --accent-foreground: 222.2 47.4% 11.2%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --ring: 221.2 83.2% 53.3%;
+}
+
 body {
-  margin: 0;
+  background: linear-gradient(135deg, #020817 0%, #0f172a 50%, #1e1b4b 100%);
+  color: hsl(var(--foreground));
+  min-height: 100vh;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
-  min-height: 100vh;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
 }
 
-/* Glassmorphism 玻璃态效果 */
-.glass {
-  background: rgba(15, 23, 42, 0.6);
+@utility glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+@utility glass-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+@utility glass-nav {
+  background: rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.glass-card {
-  background: rgba(15, 23, 42, 0.4);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 24px;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-  transition: all 0.3s ease;
-}
-
-.glass-card:hover {
-  border-color: rgba(255, 255, 255, 0.2);
-  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.5);
-}
-
-/* 渐变文字 */
-.gradient-text {
+@utility text-gradient {
   background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 50%, #f472b6 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
-
-/* 动画效果 */
-@keyframes float {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-  100% { transform: translateY(0px); }
-}
-
-.float-animation {
-  animation: float 3s ease-in-out infinite;
-}
-
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
-  50% { box-shadow: 0 0 40px rgba(59, 130, 246, 0.6); }
-}
-
-.pulse-glow {
-  animation: pulse-glow 2s ease-in-out infinite;
-}
-
-/* 自定义滚动条 */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.3);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(59, 130, 246, 0.5);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(59, 130, 246, 0.8);
-}
-
-/* Ant Design 样式覆盖 - 适配深色玻璃态主题 */
-.ant-layout {
-  min-height: 100vh;
-  background: transparent;
-}
-
-.ant-card {
-  border-radius: 16px;
-  overflow: hidden;
-  background: rgba(15, 23, 42, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.ant-btn-primary {
-  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-  border: none;
-}
-
-.ant-table {
-  background: transparent;
-  color: white;
-}
-
-.ant-table-thead > tr > th {
-  background: rgba(15, 23, 42, 0.6);
-  color: rgba(255, 255, 255, 0.7);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.ant-table-tbody > tr > td {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.ant-table-tbody > tr:hover > td {
-  background: rgba(59, 130, 246, 0.1);
-}
-
-.ant-tag {
-  border-radius: 8px;
-}
-
-.ant-input, .ant-input-textarea {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: white;
-}
-
-.ant-input:focus, .ant-input-textarea:focus {
-  border-color: rgba(59, 130, 246, 0.5);
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
-}
-
-.ant-select-selector {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: white;
-}
-
-.ant-select-dropdown {
-  background: rgba(15, 23, 42, 0.95);
-  backdrop-filter: blur(20px);
-}
-
-.ant-form-item-label > label {
-  color: rgba(255, 255, 255, 0.8);
-}
-
-.ant-descriptions-item-label {
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.ant-descriptions-item-content {
-  color: rgba(255, 255, 255, 0.9);
-}
-
-/* 自定义工具类 */
-@layer components {
-  .container {
-    @apply mx-auto px-4;
-    max-width: 1280px;
-  }
-  
-  .btn-primary-glass {
-    @apply px-6 py-3 rounded-xl font-semibold text-white;
-    background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    transition: all 0.3s ease;
-  }
-  
-  .btn-primary-glass:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4);
-  }
-}
-
-

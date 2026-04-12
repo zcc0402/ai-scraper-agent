@@ -1,0 +1,38 @@
+{
+  "timestamp": "2026-04-12T09:38:03.601938",
+  "metrics_before": {
+    "success_rate": 0.0,
+    "avg_duration": 64.05464092857143,
+    "data_quality_score": 0.0,
+    "total_tasks": 15
+  },
+  "metrics_after": {
+    "success_rate": 0.0,
+    "avg_duration": 74.52920933333333,
+    "data_quality_score": 0.0,
+    "total_tasks": 16
+  },
+  "experiments": [
+    {
+      "id": "exp_20260412_173748",
+      "hypothesis": "增加超时时间可能提高成功率",
+      "success": false,
+      "metric_before": 0.0,
+      "metric_after": 0.0
+    },
+    {
+      "id": "exp_20260412_173753",
+      "hypothesis": "增加重试次数可能提高成功率",
+      "success": false,
+      "metric_before": 0.0,
+      "metric_after": 0.0
+    },
+    {
+      "id": "exp_20260412_173758",
+      "hypothesis": "优化数据提取 Prompt 可能提高准确性",
+      "success": false,
+      "metric_before": 0.0,
+      "metric_after": 0.0
+    }
+  ]
+}
