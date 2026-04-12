@@ -40,10 +40,10 @@ function HomePage() {
           {t('common.title')}
         </div>
         <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
-          {t('home.title')}
+          {t('common.title')}
         </h1>
         <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-          {t('home.subtitle')}
+          {t('common.subtitle')}
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4">
           <Link to="/tasks/create">
