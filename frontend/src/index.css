@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 全局样式 */
+/* 全局样式 - 2026 现代设计趋势 */
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -10,6 +10,8 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
+  min-height: 100vh;
 }
 
 code {
@@ -17,9 +19,152 @@ code {
     monospace;
 }
 
-/* Ant Design 样式覆盖 */
+/* Glassmorphism 玻璃态效果 */
+.glass {
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+}
+
+.glass-card {
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  transition: all 0.3s ease;
+}
+
+.glass-card:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.5);
+}
+
+/* 渐变文字 */
+.gradient-text {
+  background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 50%, #f472b6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* 动画效果 */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.float-animation {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(59, 130, 246, 0.6); }
+}
+
+.pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(59, 130, 246, 0.5);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(59, 130, 246, 0.8);
+}
+
+/* Ant Design 样式覆盖 - 适配深色玻璃态主题 */
 .ant-layout {
   min-height: 100vh;
+  background: transparent;
+}
+
+.ant-card {
+  border-radius: 16px;
+  overflow: hidden;
+  background: rgba(15, 23, 42, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ant-btn-primary {
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  border: none;
+}
+
+.ant-table {
+  background: transparent;
+  color: white;
+}
+
+.ant-table-thead > tr > th {
+  background: rgba(15, 23, 42, 0.6);
+  color: rgba(255, 255, 255, 0.7);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ant-table-tbody > tr > td {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.ant-table-tbody > tr:hover > td {
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.ant-tag {
+  border-radius: 8px;
+}
+
+.ant-input, .ant-input-textarea {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.ant-input:focus, .ant-input-textarea:focus {
+  border-color: rgba(59, 130, 246, 0.5);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.ant-select-selector {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.ant-select-dropdown {
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(20px);
+}
+
+.ant-form-item-label > label {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.ant-descriptions-item-label {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.ant-descriptions-item-content {
+  color: rgba(255, 255, 255, 0.9);
 }
 
 /* 自定义工具类 */
@@ -28,4 +173,19 @@ code {
     @apply mx-auto px-4;
     max-width: 1280px;
   }
+  
+  .btn-primary-glass {
+    @apply px-6 py-3 rounded-xl font-semibold text-white;
+    background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+  }
+  
+  .btn-primary-glass:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4);
+  }
 }
+
+
