@@ -52,9 +52,10 @@ export const taskApi = {
     const params = new URLSearchParams()
     if (status) params.append('status', status)
     params.append('limit', limit.toString())
-    
-    const response = await api.get(`/v1/tasks?${params.toString()}`)
-    return response as any
+
+    const response: any = await api.get(`/v1/tasks?${params.toString()}`)
+    // API returns { total: number, tasks: Task[] }
+    return response.tasks || []
   },
 
   // 取消任务
