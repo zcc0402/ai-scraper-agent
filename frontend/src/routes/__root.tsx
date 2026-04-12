@@ -11,12 +11,17 @@ export const Route = createRootRoute({
 function RootComponent() {
   return (
     <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
-      <div className="min-h-screen bg-background text-foreground font-sans antialiased">
-        {/* Background Gradient */}
-        <div className="fixed inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-900/20 via-background to-background" />
-        
+      <div style={{
+        minHeight: '100vh',
+        backgroundColor: 'hsl(var(--background))',
+        color: 'hsl(var(--foreground))',
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+        WebkitFontSmoothing: 'antialiased',
+        MozOsxFontSmoothing: 'grayscale',
+        background: 'linear-gradient(135deg, #020817 0%, #0f172a 50%, #1e1b4b 100%)',
+      }}>
         <Navbar />
-        
+
         <main className="container mx-auto px-4 pt-20 pb-24 md:pt-24 md:pb-8 max-w-7xl">
           <Outlet />
         </main>
