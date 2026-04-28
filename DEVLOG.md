@@ -1,5 +1,48 @@
 # AI Scraper Agent 开发日志
 
+## 2026-04-29 全栈 TypeScript 重构完成
+
+### 1. 重构概述
+将原有的 Python + CrewAI + FastAPI 架构全栈重构为 TypeScript + Next.js 16 + pi-mono + Playwright MCP + BullMQ 架构。
+
+### 2. 技术栈
+| 组件 | 技术 | 说明 |
+|------|------|------|
+| 框架 | Next.js 16 | App Router, Server Components |
+| Agent | pi-agent-core + pi-ai | 统一 LLM API, 20+ Provider |
+| 浏览器 | Playwright MCP | 自然语言交互, Ref 机制 |
+| 任务队列 | BullMQ + Redis | 后台任务执行 |
+| 数据库 | Drizzle ORM + PostgreSQL | 类型安全 ORM |
+| UI | shadcn/ui + Tailwind v4 | 现代化组件库 |
+| 测试 | Vitest | 单元测试框架 |
+| 国际化 | next-intl | 中英文双语 |
+
+### 3. 完成的功能模块
+- ✅ **Agent 引擎**: 基于 pi-agent-core, 7 个浏览器工具
+- ✅ **Skill 系统**: 支持原生 TS Skill 和 OpenClaw SKILL.md 格式
+- ✅ **任务队列**: BullMQ + SSE 实时推送
+- ✅ **API 路由**: Tasks/Skills/Settings REST API
+- ✅ **前端页面**: 首页、任务管理、Skill 市场、设置
+- ✅ **RPA 录制**: 录制 → LLM 优化 → 固化为工作流
+- ✅ **国际化**: 中英文双语支持
+- ✅ **Docker 部署**: 多阶段构建, docker-compose 配置
+
+### 4. 项目统计
+- 56 个 TypeScript 源文件
+- 9 个测试文件, 17 个测试用例
+- 13 个 Git 提交
+
+### 5. 启动方式
+```bash
+cd web
+cp .env.example .env  # 配置 LLM API Key
+pnpm db:generate      # 生成数据库迁移
+pnpm db:migrate       # 执行迁移
+pnpm dev              # 启动开发服务器
+```
+
+---
+
 ## 2026-04-11 Phase 5 完成 & 百炼集成
 
 ### 1. 完成的工作
