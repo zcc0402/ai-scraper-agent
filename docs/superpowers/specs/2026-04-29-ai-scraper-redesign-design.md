@@ -1,7 +1,7 @@
 # AI Scraper Agent 全栈重构设计文档
 
 > 日期: 2026-04-29
-> 状态: 草案
+> 状态: 已确认
 
 ---
 
@@ -42,8 +42,9 @@
 | **浏览器 SDK** | Playwright (playwright) | latest | 批量数据提取 |
 | **任务队列** | BullMQ + Redis | latest | 后台任务执行 |
 | **数据库** | Drizzle ORM | latest | ORM + 迁移 |
-| **数据库** | SQLite (开发) / PostgreSQL (生产) | - | 数据存储 |
+| **数据库** | SQLite (开发) / PostgreSQL (生产) | - | Drizzle 同时支持两者，通过 `DATABASE_URL` 切换 |
 | **实时通信** | Server-Sent Events (SSE) | - | Agent 进度推送 |
+| **国际化** | next-intl | latest | 中英文真正实现 |
 | **测试** | Vitest | latest | 单元测试 |
 | **包管理** | pnpm | latest | 依赖管理 |
 
@@ -392,6 +393,10 @@ export const mcpClient = new PlaywrightMCPClient();
 
 ### 4.4 浏览器连接器（含 CDP 兜底）
 
+`connector.ts` 和 `mcp-client.ts` 的职责分工：
+- **`mcp-client.ts`** — 通过 MCP 协议和 Playwright MCP 子进程通信，用于 Agent 的交互式操作（snapshot/click/fill）
+- **`connector.ts`** — 直接使用 Playwright SDK，用于 CDP 兜底连接和批量数据提取
+
 ```typescript
 // src/lib/browser/connector.ts
 import { chromium, type Browser } from "playwright";
@@ -404,7 +409,7 @@ export interface BrowserOptions {
 
 export async function connectBrowser(options: BrowserOptions): Promise<Browser> {
   if (options.mode === "cdp" && options.cdpEndpoint) {
-    // CDP 模式：连接用户已有的 Chrome
+    // CDP 模式：连接用户已有的 Chrome（用于反爬严格或需要登录态的场景）
     return chromium.connectOverCDP(options.cdpEndpoint);
   }
 
@@ -517,6 +522,24 @@ class SkillRegistry {
 }
 
 export const skillRegistry = new SkillRegistry();
+
+// 应用启动时加载内置 Skills + 数据库中已安装的 Skills
+export async function initSkills() {
+  // 1. 加载内置 Skills（skills/ 目录）
+  const builtinSkills = await glob("skills/*/index.ts");
+  for (const path of builtinSkills) {
+    const skill = await loadNativeSkill(path);
+    skillRegistry.register(skill);
+  }
+
+  // 2. 从数据库加载已安装的 Skills
+  const installed = await db.select().from(skills);
+  for (const record of installed) {
+    if (record.type === "openclaw") {
+      await skillRegistry.importOpenClaw(record.config.path);
+    }
+  }
+}
 ```
 
 ### 4.6 任务队列
@@ -896,7 +919,7 @@ export function AgentVisualizer({ taskId }: { taskId: string }) {
 - LLM 配置（Provider、API Key、Model）
 - 浏览器配置（Headless/Headed、CDP 端口、代理）
 - 主题切换（Light/Dark/System）
-- 语言切换（中文/English — 真正实现）
+- 语言切换（中文/English — 使用 next-intl，真正实现双语）
 
 ---
 
