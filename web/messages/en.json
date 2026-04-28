@@ -1,0 +1,71 @@
+{
+  "common": {
+    "appName": "AI Scraper Agent",
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "create": "Create",
+    "edit": "Edit",
+    "search": "Search",
+    "back": "Back"
+  },
+  "nav": {
+    "home": "Home",
+    "tasks": "Tasks",
+    "createTask": "Create Task",
+    "skills": "Skills",
+    "settings": "Settings"
+  },
+  "home": {
+    "title": "AI Scraper Agent",
+    "subtitle": "Describe the data you want to scrape in natural language, AI handles the rest",
+    "startButton": "Start Scraping",
+    "feature1Title": "Natural Language Driven",
+    "feature1Desc": "No code or selectors needed, just describe what you want",
+    "feature2Title": "Multi-Agent Collaboration",
+    "feature2Desc": "Planning, navigation, extraction, validation — intelligent teamwork",
+    "feature3Title": "Extensible Skill System",
+    "feature3Desc": "Supports OpenClaw skills, one-click install to extend capabilities"
+  },
+  "tasks": {
+    "title": "Tasks",
+    "empty": "No tasks yet",
+    "create": "Create Scraping Task",
+    "inputLabel": "Describe the data you want to scrape",
+    "inputPlaceholder": "e.g. Scrape top 10 titles from Hacker News",
+    "outputFormat": "Output Format",
+    "startButton": "Start Scraping",
+    "creating": "Creating...",
+    "detail": "Task Details",
+    "description": "Task Description",
+    "agentProcess": "Agent Execution Process",
+    "resultData": "Result Data",
+    "waiting": "Waiting to execute..."
+  },
+  "status": {
+    "pending": "Pending",
+    "running": "Running",
+    "planning": "Planning",
+    "navigating": "Navigating",
+    "extracting": "Extracting",
+    "validating": "Validating",
+    "exporting": "Exporting",
+    "completed": "Completed",
+    "failed": "Failed",
+    "cancelled": "Cancelled"
+  },
+  "skills": {
+    "title": "Skill Marketplace",
+    "builtin": "Built-in",
+    "openclaw": "OpenClaw"
+  },
+  "settings": {
+    "title": "Settings",
+    "llmConfig": "LLM Configuration",
+    "provider": "Provider",
+    "model": "Model",
+    "apiKey": "API Key",
+    "saving": "Saving..."
+  }
+}

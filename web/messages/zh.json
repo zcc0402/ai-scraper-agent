@@ -1,0 +1,71 @@
+{
+  "common": {
+    "appName": "AI Scraper Agent",
+    "loading": "加载中...",
+    "save": "保存",
+    "cancel": "取消",
+    "delete": "删除",
+    "create": "创建",
+    "edit": "编辑",
+    "search": "搜索",
+    "back": "返回"
+  },
+  "nav": {
+    "home": "首页",
+    "tasks": "任务",
+    "createTask": "创建任务",
+    "skills": "Skills",
+    "settings": "设置"
+  },
+  "home": {
+    "title": "AI Scraper Agent",
+    "subtitle": "用自然语言描述你想抓取的数据，AI 自动完成爬取",
+    "startButton": "开始爬取",
+    "feature1Title": "自然语言驱动",
+    "feature1Desc": "无需编写代码或选择器，用自然语言描述需求即可",
+    "feature2Title": "多角色 AI 协作",
+    "feature2Desc": "规划、导航、提取、验证，智能分工协作",
+    "feature3Title": "可扩展 Skill 系统",
+    "feature3Desc": "支持 OpenClaw 技能，一键安装扩展爬虫能力"
+  },
+  "tasks": {
+    "title": "任务列表",
+    "empty": "暂无任务",
+    "create": "创建爬取任务",
+    "inputLabel": "描述你想抓取的数据",
+    "inputPlaceholder": "例如：抓取 Hacker News 前10条标题",
+    "outputFormat": "输出格式",
+    "startButton": "开始爬取",
+    "creating": "创建中...",
+    "detail": "任务详情",
+    "description": "任务描述",
+    "agentProcess": "Agent 执行过程",
+    "resultData": "结果数据",
+    "waiting": "等待执行..."
+  },
+  "status": {
+    "pending": "等待中",
+    "running": "运行中",
+    "planning": "规划中",
+    "navigating": "导航中",
+    "extracting": "提取中",
+    "validating": "验证中",
+    "exporting": "导出中",
+    "completed": "已完成",
+    "failed": "失败",
+    "cancelled": "已取消"
+  },
+  "skills": {
+    "title": "Skill 市场",
+    "builtin": "内置",
+    "openclaw": "OpenClaw"
+  },
+  "settings": {
+    "title": "设置",
+    "llmConfig": "LLM 配置",
+    "provider": "Provider",
+    "model": "Model",
+    "apiKey": "API Key",
+    "saving": "保存中..."
+  }
+}
