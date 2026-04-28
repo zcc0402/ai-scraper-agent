@@ -2,12 +2,13 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Geist } from "next/font/google";
 import { cn } from "@/lib/utils";
+import { Navbar } from "@/components/layout/navbar";
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata: Metadata = {
   title: "AI Scraper Agent",
-  description: "AI-powered web scraping agent",
+  description: "自然语言驱动的智能爬虫",
 };
 
 export default function RootLayout({
@@ -16,8 +17,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={cn("font-sans", geist.variable)}>
-      <body>{children}</body>
+    <html lang="zh-CN" className={cn("font-sans", geist.variable)}>
+      <body>
+        <Navbar />
+        <main className="container py-6">{children}</main>
+      </body>
     </html>
   );
 }
