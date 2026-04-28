@@ -31,57 +31,61 @@ export default function TaskDetailPage() {
       .then(setTask);
   }, [taskId]);
 
-  if (!task) return <p>加载中...</p>;
+  if (!task) {
+    return (
+      <div className="min-h-screen bg-[#0F172A] flex items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-2 border-[#22C55E] border-t-transparent rounded-full" />
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">任务详情</h1>
-        <Badge>{statusLabels[taskStatus] || taskStatus}</Badge>
-      </div>
+    <div className="min-h-screen bg-[#0F172A] py-12 px-4">
+      <div className="max-w-4xl mx-auto">
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-3xl font-bold text-[#F8FAFC]">任务详情</h1>
+          <span className={`px-3 py-1.5 rounded-md text-sm font-medium ${
+            taskStatus === "completed" ? "bg-[#22C55E]/10 text-[#22C55E]" :
+            taskStatus === "failed" ? "bg-[#EF4444]/10 text-[#EF4444]" :
+            "bg-[#3B82F6]/10 text-[#3B82F6]"
+          }`}>
+            {statusLabels[taskStatus] || taskStatus}
+          </span>
+        </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">任务描述</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p>{task.userInput}</p>
-        </CardContent>
-      </Card>
+        <div className="bg-[#1E293B] border border-[#475569] rounded-lg p-6 mb-6">
+          <h2 className="text-lg font-semibold text-[#F8FAFC] mb-4">任务描述</h2>
+          <p className="text-[#94A3B8]">{task.userInput}</p>
+        </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Agent 执行过程</CardTitle>
-        </CardHeader>
-        <CardContent>
+        <div className="bg-[#1E293B] border border-[#475569] rounded-lg p-6 mb-6">
+          <h2 className="text-lg font-semibold text-[#F8FAFC] mb-4">Agent 执行过程</h2>
           <div className="space-y-3">
             {events.map((event, i) => (
               <div key={i} className="flex items-start gap-3 text-sm">
-                <span className="font-mono text-xs text-muted-foreground w-24 shrink-0">
+                <span className="font-mono text-xs text-[#64748B] w-24 shrink-0">
                   {event.type}
                 </span>
-                <span>{event.title || event.description || JSON.stringify(event).slice(0, 100)}</span>
+                <span className="text-[#94A3B8]">
+                  {event.title || event.description || JSON.stringify(event).slice(0, 100)}
+                </span>
               </div>
             ))}
             {events.length === 0 && (
-              <p className="text-muted-foreground">等待执行...</p>
+              <p className="text-[#64748B]">等待执行...</p>
             )}
           </div>
-        </CardContent>
-      </Card>
+        </div>
 
-      {task.resultData && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">结果数据</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <pre className="bg-muted p-4 rounded-md overflow-auto max-h-96 text-sm">
+        {task.resultData && (
+          <div className="bg-[#1E293B] border border-[#475569] rounded-lg p-6">
+            <h2 className="text-lg font-semibold text-[#F8FAFC] mb-4">结果数据</h2>
+            <pre className="bg-[#0F172A] p-4 rounded-lg overflow-auto max-h-96 text-sm text-[#94A3B8]">
               {JSON.stringify(task.resultData, null, 2)}
             </pre>
-          </CardContent>
-        </Card>
-      )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

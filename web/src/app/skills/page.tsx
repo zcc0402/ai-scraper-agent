@@ -16,15 +16,23 @@ export default function SkillsPage() {
       });
   }, []);
 
-  if (loading) return <p>加载中...</p>;
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0F172A] flex items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-2 border-[#22C55E] border-t-transparent rounded-full" />
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Skill 市场</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {skills.map((skill) => (
-          <SkillCard key={skill.name} skill={skill} />
-        ))}
+    <div className="min-h-screen bg-[#0F172A] py-12 px-4">
+      <div className="max-w-6xl mx-auto">
+        <h1 className="text-3xl font-bold text-[#F8FAFC] mb-8">Skill 市场</h1>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {skills.map((skill) => (
+            <SkillCard key={skill.name} skill={skill} />
+          ))}
+        </div>
       </div>
     </div>
   );

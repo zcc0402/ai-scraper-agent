@@ -27,50 +27,57 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
-      <h1 className="text-2xl font-bold">设置</h1>
+    <div className="min-h-screen bg-[#0F172A] py-12 px-4">
+      <div className="max-w-2xl mx-auto">
+        <h1 className="text-3xl font-bold text-[#F8FAFC] mb-8">设置</h1>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>LLM 配置</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <Label>Provider</Label>
-            <Input
-              value={settings.llm_provider || ""}
-              onChange={(e) =>
-                setSettings((s) => ({ ...s, llm_provider: e.target.value }))
-              }
-              placeholder="google"
-            />
+        <div className="bg-[#1E293B] border border-[#475569] rounded-lg p-6 mb-6">
+          <h2 className="text-lg font-semibold text-[#F8FAFC] mb-6">LLM 配置</h2>
+          <div className="space-y-4">
+            <div>
+              <Label className="text-[#94A3B8] text-sm mb-2 block">Provider</Label>
+              <Input
+                value={settings.llm_provider || ""}
+                onChange={(e) =>
+                  setSettings((s) => ({ ...s, llm_provider: e.target.value }))
+                }
+                placeholder="google"
+                className="bg-[#0F172A] border-[#475569] text-[#F8FAFC] placeholder:text-[#64748B] focus:border-[#22C55E] focus:ring-[#22C55E]/20"
+              />
+            </div>
+            <div>
+              <Label className="text-[#94A3B8] text-sm mb-2 block">Model</Label>
+              <Input
+                value={settings.llm_model || ""}
+                onChange={(e) =>
+                  setSettings((s) => ({ ...s, llm_model: e.target.value }))
+                }
+                placeholder="gemini-2.5-flash"
+                className="bg-[#0F172A] border-[#475569] text-[#F8FAFC] placeholder:text-[#64748B] focus:border-[#22C55E] focus:ring-[#22C55E]/20"
+              />
+            </div>
+            <div>
+              <Label className="text-[#94A3B8] text-sm mb-2 block">API Key</Label>
+              <Input
+                type="password"
+                value={settings.llm_api_key || ""}
+                onChange={(e) =>
+                  setSettings((s) => ({ ...s, llm_api_key: e.target.value }))
+                }
+                className="bg-[#0F172A] border-[#475569] text-[#F8FAFC] placeholder:text-[#64748B] focus:border-[#22C55E] focus:ring-[#22C55E]/20"
+              />
+            </div>
           </div>
-          <div>
-            <Label>Model</Label>
-            <Input
-              value={settings.llm_model || ""}
-              onChange={(e) =>
-                setSettings((s) => ({ ...s, llm_model: e.target.value }))
-              }
-              placeholder="gemini-2.5-flash"
-            />
-          </div>
-          <div>
-            <Label>API Key</Label>
-            <Input
-              type="password"
-              value={settings.llm_api_key || ""}
-              onChange={(e) =>
-                setSettings((s) => ({ ...s, llm_api_key: e.target.value }))
-              }
-            />
-          </div>
-        </CardContent>
-      </Card>
+        </div>
 
-      <Button onClick={handleSave} disabled={saving}>
-        {saving ? "保存中..." : "保存设置"}
-      </Button>
+        <Button
+          onClick={handleSave}
+          disabled={saving}
+          className="bg-[#22C55E] hover:bg-[#16A34A] text-[#0F172A] font-semibold"
+        >
+          {saving ? "保存中..." : "保存设置"}
+        </Button>
+      </div>
     </div>
   );
 }
