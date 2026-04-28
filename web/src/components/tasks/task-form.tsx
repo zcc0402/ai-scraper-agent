@@ -72,7 +72,7 @@ export function TaskForm() {
 
       <div>
         <Label>输出格式</Label>
-        <Select value={outputFormat} onValueChange={setOutputFormat}>
+        <Select value={outputFormat} onValueChange={(v) => setOutputFormat(v || "json")}>
           <SelectTrigger className="mt-2 w-48">
             <SelectValue />
           </SelectTrigger>

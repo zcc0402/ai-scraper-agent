@@ -27,6 +27,7 @@ export async function optimizeToRPA(
       {
         role: "user",
         content: `原始目标: ${originalGoal}\n\n录制的操作:\n${JSON.stringify(actions, null, 2)}`,
+        timestamp: Date.now(),
       },
     ],
     tools: [],

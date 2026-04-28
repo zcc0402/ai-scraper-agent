@@ -38,18 +38,31 @@ export function startWorker() {
         }
       });
 
-      const result = await agent.prompt(userInput);
+      await agent.prompt(userInput);
+
+      // Get the last assistant message as the result
+      const messages = agent.state.messages;
+      const lastAssistant = [...messages].reverse().find((m: any) => m.role === "assistant");
+      const firstContent = lastAssistant?.content?.[0];
+      const result = typeof firstContent === "object" && "text" in firstContent ? firstContent.text : String(firstContent || "");
 
       taskEvents.publish(taskId, { type: "status", status: "exporting" });
+      let parsedResult: any;
+      try {
+        parsedResult = JSON.parse(result);
+      } catch {
+        parsedResult = result;
+      }
+
       const file = await exportData(
-        Array.isArray(result) ? result : [result],
+        Array.isArray(parsedResult) ? parsedResult : [parsedResult],
         (outputFormat as any) || "json"
       );
 
       await db.update(tasks)
         .set({
           status: "completed",
-          resultData: result,
+          resultData: parsedResult,
           outputFile: typeof file === "string" ? file : undefined,
           completedAt: new Date(),
         })
