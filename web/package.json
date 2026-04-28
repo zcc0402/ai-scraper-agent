@@ -19,6 +19,7 @@
     "@mariozechner/pi-ai": "latest",
     "@modelcontextprotocol/sdk": "latest",
     "@playwright/mcp": "latest",
+    "@sinclair/typebox": "^0.34.49",
     "axios": "latest",
     "bullmq": "latest",
     "class-variance-authority": "latest",
