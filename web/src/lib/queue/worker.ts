@@ -18,7 +18,10 @@ export function startWorker() {
     async (job) => {
       const { taskId, userInput, skillName, outputFormat } = job.data;
 
+      console.log(`[worker] Processing task ${taskId}: "${userInput}"`);
+
       const skill = skillRegistry.match(userInput);
+      console.log(`[worker] Matched skill: ${skill.name}`);
 
       await db.update(tasks).set({ status: "running" }).where(eq(tasks.id, taskId));
       taskEvents.publish(taskId, { type: "status", status: "running" });
@@ -42,9 +45,28 @@ export function startWorker() {
 
       // Get the last assistant message as the result
       const messages = agent.state.messages;
+      console.log(`[worker] Agent completed with ${messages.length} messages`);
+
       const lastAssistant = [...messages].reverse().find((m: any) => m.role === "assistant");
-      const firstContent = lastAssistant?.content?.[0];
-      const result = typeof firstContent === "object" && "text" in firstContent ? firstContent.text : String(firstContent || "");
+      let result = "";
+
+      if (lastAssistant?.content) {
+        const content = lastAssistant.content as any[];
+        if (Array.isArray(content)) {
+          // Extract text from all content blocks
+          const textBlocks = content.filter((c: any) => c.type === "text");
+          if (textBlocks.length > 0) {
+            result = textBlocks.map((c: any) => c.text).join("\n");
+          } else {
+            // Fallback: stringify the entire content
+            result = JSON.stringify(content);
+          }
+        } else if (typeof content === "string") {
+          result = content;
+        }
+      }
+
+      console.log(`[worker] Result: ${result.substring(0, 200)}...`);
 
       taskEvents.publish(taskId, { type: "status", status: "exporting" });
       let parsedResult: any;

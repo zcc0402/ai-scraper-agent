@@ -45,6 +45,13 @@ export function createScraperAgent(
       model: getLLMModel(),
       tools,
     },
+    getApiKey: async (provider: string) => {
+      // For custom providers, return the API key from env
+      if (provider === process.env.LLM_PROVIDER) {
+        return process.env.LLM_API_KEY;
+      }
+      return undefined;
+    },
   });
 
   if (onEvent) {
