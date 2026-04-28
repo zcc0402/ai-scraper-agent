@@ -16,21 +16,21 @@ export function Navbar() {
   const pathname = usePathname();
 
   return (
-    <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 items-center">
-        <Link href="/" className="mr-6 font-bold text-lg">
+    <nav className="border-b border-[#475569] bg-[#0F172A]/95 backdrop-blur-sm">
+      <div className="container flex h-16 items-center">
+        <Link href="/" className="mr-8 font-semibold text-lg text-[#F8FAFC]">
           AI Scraper
         </Link>
-        <div className="flex gap-4">
+        <div className="flex gap-6">
           {links.map((link) => (
             <Link
               key={link.href}
               href={link.href}
               className={cn(
-                "text-sm font-medium transition-colors hover:text-primary",
+                "text-sm font-medium transition-colors duration-200",
                 pathname === link.href
-                  ? "text-foreground"
-                  : "text-muted-foreground"
+                  ? "text-[#22C55E]"
+                  : "text-[#94A3B8] hover:text-[#F8FAFC]"
               )}
             >
               {link.label}

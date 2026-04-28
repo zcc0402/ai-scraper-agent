@@ -18,9 +18,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="zh-CN" className={cn("font-sans", geist.variable)}>
-      <body>
+      <body className="bg-[#0F172A] text-[#F8FAFC] antialiased">
         <Navbar />
-        <main className="container py-6">{children}</main>
+        <main>{children}</main>
       </body>
     </html>
   );
