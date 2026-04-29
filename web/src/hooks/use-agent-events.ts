@@ -23,6 +23,25 @@ export function useAgentEvents(taskId: string) {
   const [events, setEvents] = useState<AgentEvent[]>([]);
   const [taskStatus, setTaskStatus] = useState<string>("pending");
 
+  // Normalize persisted events to match AgentEvent structure
+  const normalizeEvent = useCallback((raw: Record<string, unknown>): AgentEvent => {
+    const event = { ...raw } as AgentEvent;
+    // Map tool_execution events: toolName/args/result at top level → toolCall object
+    if (
+      (event.type === "tool_execution_start" || event.type === "tool_execution_end") &&
+      !event.toolCall
+    ) {
+      event.toolCall = {
+        name: (event.toolName as string) || "unknown",
+        args: (event.args as Record<string, unknown>) || {},
+        result: event.result,
+        error: event.error as string | undefined,
+        duration: event.duration as number | undefined,
+      };
+    }
+    return event;
+  }, []);
+
   // Load persisted events from history API
   const loadHistory = useCallback(async () => {
     try {
@@ -30,16 +49,17 @@ export function useAgentEvents(taskId: string) {
       if (!res.ok) return;
       const data = await res.json();
       if (data.events?.length > 0) {
-        setEvents(data.events);
+        const normalized = data.events.map(normalizeEvent);
+        setEvents(normalized);
         // Derive status from last event
-        const last = data.events[data.events.length - 1];
+        const last = normalized[normalized.length - 1];
         if (last.type === "completed") setTaskStatus("completed");
         else if (last.type === "failed") setTaskStatus("failed");
       }
     } catch {
       // ignore
     }
-  }, [taskId]);
+  }, [taskId, normalizeEvent]);
 
   useEffect(() => {
     // Always try loading history first for persisted events

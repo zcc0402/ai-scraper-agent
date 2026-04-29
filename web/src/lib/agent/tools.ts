@@ -24,7 +24,7 @@ async function captureScreenshot(
   eventBus: TaskEventBus
 ): Promise<void> {
   try {
-    const result = await mcpClient.callTool("browser_screenshot");
+    const result = await mcpClient.callTool("browser_take_screenshot");
     const screenshotData = result as { data?: string };
 
     if (screenshotData?.data) {
@@ -123,7 +123,7 @@ export function createBrowserTools(
       description: "Take a screenshot of the current page",
       parameters: Type.Object({}),
       execute: async (_toolCallId: string) => {
-        const result = await mcpClient.callTool("browser_screenshot");
+        const result = await mcpClient.callTool("browser_take_screenshot");
         if (taskId && eventBus) {
           await captureScreenshot(taskId, "screenshot", eventBus);
         }
