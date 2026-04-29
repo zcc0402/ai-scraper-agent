@@ -2,8 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Clock, ListTodo, PlusCircle } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
@@ -16,11 +14,11 @@ interface Task {
   createdAt: string;
 }
 
-const statusColors: Record<string, string> = {
-  pending: "bg-gray-100 text-gray-600",
-  running: "bg-blue-50 text-blue-600",
-  completed: "bg-emerald-50 text-emerald-600",
-  failed: "bg-red-50 text-red-600",
+const statusStyles: Record<string, { bg: string; text: string; dot: string }> = {
+  pending: { bg: "bg-gray-50", text: "text-gray-600", dot: "bg-gray-400" },
+  running: { bg: "bg-blue-50", text: "text-blue-600", dot: "bg-blue-500 animate-pulse" },
+  completed: { bg: "bg-emerald-50", text: "text-emerald-600", dot: "bg-emerald-500" },
+  failed: { bg: "bg-red-50", text: "text-red-600", dot: "bg-red-500" },
 };
 
 const statusLabels: Record<string, string> = {
@@ -41,62 +39,63 @@ export function RecentTasks() {
   }, []);
 
   return (
-    <Card className="border shadow-sm">
-      <CardHeader className="flex flex-row items-center justify-between pb-3">
-        <CardTitle className="text-sm font-medium">最近任务</CardTitle>
+    <div className="rounded-xl border bg-white shadow-sm overflow-hidden">
+      <div className="flex items-center justify-between px-5 py-3.5 border-b bg-muted/30">
+        <h3 className="text-sm font-semibold">最近任务</h3>
         <Link href="/tasks">
-          <Button variant="ghost" size="sm" className="h-7 text-xs gap-1 text-muted-foreground">
+          <Button variant="ghost" size="sm" className="h-7 text-xs gap-1 text-muted-foreground hover:text-foreground">
             查看全部
             <ArrowRight className="h-3 w-3" />
           </Button>
         </Link>
-      </CardHeader>
-      <CardContent>
+      </div>
+      <div className="p-0">
         {tasks.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-10 text-center">
-            <div className="p-3 rounded-full bg-muted mb-3">
-              <ListTodo className="h-6 w-6 text-muted-foreground" />
+          <div className="flex flex-col items-center justify-center py-12 text-center px-4">
+            <div className="p-3 rounded-full bg-muted/50 mb-3">
+              <ListTodo className="h-6 w-6 text-muted-foreground/70" />
             </div>
             <p className="text-sm font-medium mb-1">暂无任务</p>
             <p className="text-xs text-muted-foreground mb-4">创建你的第一个爬虫任务吧</p>
             <Link href="/tasks/create">
-              <Button size="sm" variant="outline" className="gap-1.5">
+              <Button size="sm" className="gap-1.5">
                 <PlusCircle className="h-3.5 w-3.5" />
                 创建任务
               </Button>
             </Link>
           </div>
         ) : (
-          <div className="space-y-2">
-            {tasks.map((task) => (
-              <Link
-                key={task.id}
-                href={`/tasks/${task.id}`}
-                className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 transition-colors"
-              >
-                <div className="flex-1 min-w-0 mr-3">
-                  <p className="text-sm truncate">{task.userInput}</p>
-                  <div className="flex items-center gap-1.5 mt-1">
-                    <Clock className="h-3 w-3 text-muted-foreground" />
-                    <span className="text-[11px] text-muted-foreground">
-                      {formatDistanceToNow(new Date(task.createdAt), {
-                        addSuffix: true,
-                        locale: zhCN,
-                      })}
-                    </span>
-                  </div>
-                </div>
-                <Badge
-                  variant="secondary"
-                  className={`text-[11px] px-2 py-0.5 ${statusColors[task.status] || ""}`}
+          <div className="divide-y">
+            {tasks.map((task) => {
+              const status = statusStyles[task.status] || statusStyles.pending;
+              return (
+                <Link
+                  key={task.id}
+                  href={`/tasks/${task.id}`}
+                  className="flex items-center justify-between px-5 py-3 hover:bg-muted/30 transition-colors"
                 >
-                  {statusLabels[task.status] || task.status}
-                </Badge>
-              </Link>
-            ))}
+                  <div className="flex-1 min-w-0 mr-4">
+                    <p className="text-sm truncate">{task.userInput}</p>
+                    <div className="flex items-center gap-1.5 mt-1">
+                      <Clock className="h-3 w-3 text-muted-foreground" />
+                      <span className="text-[11px] text-muted-foreground">
+                        {formatDistanceToNow(new Date(task.createdAt), {
+                          addSuffix: true,
+                          locale: zhCN,
+                        })}
+                      </span>
+                    </div>
+                  </div>
+                  <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium ${status.bg} ${status.text}`}>
+                    <span className={`w-1.5 h-1.5 rounded-full ${status.dot}`} />
+                    {statusLabels[task.status] || task.status}
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

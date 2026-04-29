@@ -38,19 +38,19 @@ export function AppSidebar() {
   return (
     <Sidebar>
       <SidebarHeader>
-        <div className="flex items-center gap-2.5 px-4 py-3">
-          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary text-primary-foreground">
+        <div className="flex items-center gap-3 px-3 py-2.5">
+          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-sm">
             <Bot className="h-4 w-4" />
           </div>
-          <div>
-            <span className="font-semibold text-sm">AI Scraper</span>
-            <p className="text-[10px] text-muted-foreground">Agent v1.0</p>
+          <div className="flex flex-col">
+            <span className="font-semibold text-sm leading-tight">AI Scraper</span>
+            <span className="text-[10px] text-muted-foreground leading-tight">Agent v1.0</span>
           </div>
         </div>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel className="text-xs">导航</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-[11px] uppercase tracking-wider text-muted-foreground/70 px-3 mb-1">导航</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {navItems.map((item) => {
@@ -63,9 +63,9 @@ export function AppSidebar() {
                       render={<Link href={item.url} />}
                       isActive={isActive}
                       tooltip={item.title}
-                      className="h-9"
+                      className="h-9 px-3 gap-2.5 data-[active=true]:bg-primary/10 data-[active=true]:text-primary data-[active=true]:font-medium"
                     >
-                      <item.icon className="h-4 w-4" />
+                      <item.icon className="h-4 w-4 shrink-0" />
                       <span className="text-sm">{item.title}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -76,7 +76,7 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <div className="p-2">
+        <div className="p-2 border-t">
           <UserNav />
         </div>
       </SidebarFooter>
