@@ -7,7 +7,13 @@ export interface AgentEvent {
   title?: string;
   description?: string;
   snapshot?: string;
-  toolCall?: { name: string; args: Record<string, unknown> };
+  toolCall?: {
+    name: string;
+    args: Record<string, unknown>;
+    result?: unknown;
+    error?: unknown;
+    duration?: number;
+  };
   status?: string;
   result?: unknown;
   [key: string]: unknown;
