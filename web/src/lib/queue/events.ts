@@ -1,6 +1,3 @@
-import { db } from "@/lib/db";
-import { taskEvents as taskEventsTable } from "@/lib/db/schema";
-
 export type TaskEvent = {
   type: string;
   [key: string]: unknown;
@@ -10,6 +7,11 @@ type Listener = (event: TaskEvent) => void;
 
 export class TaskEventBus {
   private listeners = new Map<string, Set<Listener>>();
+  private persistFn: ((taskId: string, event: TaskEvent) => void) | null = null;
+
+  setPersistFn(fn: (taskId: string, event: TaskEvent) => void) {
+    this.persistFn = fn;
+  }
 
   subscribe(taskId: string, listener: Listener): () => void {
     if (!this.listeners.has(taskId)) {
@@ -23,14 +25,10 @@ export class TaskEventBus {
   }
 
   publish(taskId: string, event: TaskEvent): void {
-    // Persist to database (fire-and-forget)
-    db.insert(taskEventsTable)
-      .values({
-        taskId,
-        type: event.type,
-        data: event,
-      })
-      .catch((err) => console.error("[events] Failed to persist event:", err));
+    // Persist to database if handler is set
+    if (this.persistFn) {
+      this.persistFn(taskId, event);
+    }
 
     // Notify live listeners
     const listeners = this.listeners.get(taskId);

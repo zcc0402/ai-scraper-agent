@@ -3,7 +3,7 @@ import { createScraperAgent } from "@/lib/agent/factory";
 import { skillRegistry } from "@/lib/skills/registry";
 import { taskEvents } from "./events";
 import { db } from "@/lib/db";
-import { tasks } from "@/lib/db/schema";
+import { tasks, taskEvents as taskEventsTable } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { exportData } from "@/lib/export/exporter";
 
@@ -13,6 +13,13 @@ const connection = {
 };
 
 export function startWorker() {
+  // Set up event persistence to database
+  taskEvents.setPersistFn((taskId, event) => {
+    db.insert(taskEventsTable)
+      .values({ taskId, type: event.type, data: event })
+      .catch((err) => console.error("[worker] Failed to persist event:", err));
+  });
+
   const worker = new Worker(
     "scrape",
     async (job) => {
