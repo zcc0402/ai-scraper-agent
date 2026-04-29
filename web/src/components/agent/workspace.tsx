@@ -47,8 +47,11 @@ interface AgentWorkspaceProps {
 }
 
 export function AgentWorkspace({ taskId }: AgentWorkspaceProps) {
-  const { events, taskStatus } = useAgentEvents(taskId);
+  const { events, taskStatus: liveStatus } = useAgentEvents(taskId);
   const [task, setTask] = useState<any>(null);
+
+  // Use live status if available, otherwise fall back to task's stored status
+  const taskStatus = liveStatus !== "pending" ? liveStatus : (task?.status || "pending");
   const [screenshots, setScreenshots] = useState<
     { index: number; url: string; timestamp: number }[]
   >([]);
@@ -91,8 +94,14 @@ export function AgentWorkspace({ taskId }: AgentWorkspaceProps) {
         setElapsed(Math.floor((Date.now() - start) / 1000));
       }, 1000);
       return () => clearInterval(interval);
+    } else if (task?.createdAt && task?.completedAt) {
+      // For completed tasks, show final duration
+      const duration = Math.floor(
+        (new Date(task.completedAt).getTime() - new Date(task.createdAt).getTime()) / 1000
+      );
+      setElapsed(duration);
     }
-  }, [taskStatus, task?.createdAt]);
+  }, [taskStatus, task?.createdAt, task?.completedAt]);
 
   const formatElapsed = (seconds: number) => {
     const m = Math.floor(seconds / 60);
@@ -135,7 +144,7 @@ export function AgentWorkspace({ taskId }: AgentWorkspaceProps) {
         </div>
 
         <div className="flex items-center gap-2">
-          {isRunning && (
+          {(isRunning || taskStatus === "completed" || taskStatus === "failed") && elapsed > 0 && (
             <span className="text-xs text-muted-foreground flex items-center gap-1">
               <Clock className="h-3 w-3" />
               {formatElapsed(elapsed)}
