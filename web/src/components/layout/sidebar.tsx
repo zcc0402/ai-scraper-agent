@@ -38,14 +38,19 @@ export function AppSidebar() {
   return (
     <Sidebar>
       <SidebarHeader>
-        <div className="flex items-center gap-2 px-4 py-2">
-          <Bot className="h-6 w-6" />
-          <span className="font-semibold text-lg">AI Scraper</span>
+        <div className="flex items-center gap-2.5 px-4 py-3">
+          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary text-primary-foreground">
+            <Bot className="h-4 w-4" />
+          </div>
+          <div>
+            <span className="font-semibold text-sm">AI Scraper</span>
+            <p className="text-[10px] text-muted-foreground">Agent v1.0</p>
+          </div>
         </div>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>导航</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-xs">导航</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {navItems.map((item) => {
@@ -58,9 +63,10 @@ export function AppSidebar() {
                       render={<Link href={item.url} />}
                       isActive={isActive}
                       tooltip={item.title}
+                      className="h-9"
                     >
-                      <item.icon />
-                      <span>{item.title}</span>
+                      <item.icon className="h-4 w-4" />
+                      <span className="text-sm">{item.title}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 );
@@ -70,7 +76,7 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <div className="px-3 py-2">
+        <div className="p-2">
           <UserNav />
         </div>
       </SidebarFooter>
