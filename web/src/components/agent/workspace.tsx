@@ -103,7 +103,8 @@ export function AgentWorkspace({ taskId }: AgentWorkspaceProps) {
       const duration = Math.abs(Math.floor(
         (new Date(task.completedAt).getTime() - new Date(task.createdAt).getTime()) / 1000
       ));
-      setElapsed(duration);
+      // Cap at 24 hours to avoid displaying bogus timestamps from timezone issues
+      setElapsed(Math.min(duration, 86400));
     }
   }, [task?.createdAt, task?.completedAt]);
 
