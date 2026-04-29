@@ -25,13 +25,28 @@ async function captureScreenshot(
 ): Promise<void> {
   try {
     const result = await mcpClient.callTool("browser_take_screenshot");
-    const screenshotData = result as { data?: string };
+    const mcpResult = result as { content?: Array<{ type: string; data?: string; text?: string }> };
 
-    if (screenshotData?.data) {
+    // MCP returns content array - look for image type with base64 data
+    let base64Data: string | undefined;
+    if (mcpResult?.content) {
+      for (const block of mcpResult.content) {
+        if (block.type === "image" && block.data) {
+          base64Data = block.data;
+          break;
+        }
+      }
+    }
+    // Fallback: check top-level data field
+    if (!base64Data) {
+      base64Data = (result as { data?: string })?.data;
+    }
+
+    if (base64Data) {
       screenshotCounter++;
       const dir = join(process.cwd(), "uploads", "screenshots", taskId);
       await mkdir(dir, { recursive: true });
-      const buffer = Buffer.from(screenshotData.data, "base64");
+      const buffer = Buffer.from(base64Data, "base64");
       const filename = String(screenshotCounter).padStart(3, "0") + ".png";
       await writeFile(join(dir, filename), buffer);
 
