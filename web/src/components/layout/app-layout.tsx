@@ -1,9 +1,25 @@
+"use client";
+
+import { usePathname } from "next/navigation";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppSidebar } from "./sidebar";
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const isWorkspace = /^\/tasks\/[^/]+$/.test(pathname);
+
+  if (isWorkspace) {
+    return (
+      <TooltipProvider>
+        <div className="h-screen w-screen overflow-hidden">
+          {children}
+        </div>
+      </TooltipProvider>
+    );
+  }
+
   return (
     <TooltipProvider>
       <SidebarProvider>
