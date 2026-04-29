@@ -108,6 +108,7 @@ export default function TaskDetailPage() {
                     <Button
                       variant="outline"
                       size="sm"
+                      nativeButton={false}
                       render={<a href={`/api/tasks/${taskId}/download`} />}
                     >
                       <Download className="h-4 w-4 mr-2" />
