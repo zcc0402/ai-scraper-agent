@@ -105,12 +105,14 @@ export default function TaskDetailPage() {
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-base">结果数据</CardTitle>
                   {outputFile && (
-                    <Button variant="outline" size="sm" asChild>
-                      <a href={`/api/tasks/${taskId}/download`}>
-                        <Download className="h-4 w-4 mr-2" />
-                        下载 {task.outputFormat?.toUpperCase() || "文件"}
-                        {formatIcons[task.outputFormat || "json"]}
-                      </a>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      render={<a href={`/api/tasks/${taskId}/download`} />}
+                    >
+                      <Download className="h-4 w-4 mr-2" />
+                      下载 {task.outputFormat?.toUpperCase() || "文件"}
+                      {formatIcons[task.outputFormat || "json"]}
                     </Button>
                   )}
                 </div>
