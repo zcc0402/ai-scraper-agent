@@ -76,16 +76,17 @@ export function startWorker() {
         parsedResult = result;
       }
 
-      const file = await exportData(
+      const filePath = await exportData(
         Array.isArray(parsedResult) ? parsedResult : [parsedResult],
-        (outputFormat as any) || "json"
+        (outputFormat as any) || "json",
+        taskId
       );
 
       await db.update(tasks)
         .set({
           status: "completed",
           resultData: parsedResult,
-          outputFile: typeof file === "string" ? file : undefined,
+          outputFile: filePath,
           completedAt: new Date(),
         })
         .where(eq(tasks.id, taskId));
