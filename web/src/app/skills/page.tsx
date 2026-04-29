@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { SkillCard } from "@/components/skills/skill-card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function SkillsPage() {
   const [skills, setSkills] = useState<any[]>([]);
@@ -18,21 +19,24 @@ export default function SkillsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0F172A] flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-2 border-[#22C55E] border-t-transparent rounded-full" />
+      <div className="space-y-4">
+        <Skeleton className="h-8 w-48" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[1, 2, 3].map((i) => (
+            <Skeleton key={i} className="h-40" />
+          ))}
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0F172A] py-12 px-4">
-      <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl font-bold text-[#F8FAFC] mb-8">Skill 市场</h1>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {skills.map((skill) => (
-            <SkillCard key={skill.name} skill={skill} />
-          ))}
-        </div>
+    <div className="space-y-6">
+      <h1 className="text-2xl font-bold">Skill 市场</h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {skills.map((skill) => (
+          <SkillCard key={skill.name} skill={skill} />
+        ))}
       </div>
     </div>
   );
