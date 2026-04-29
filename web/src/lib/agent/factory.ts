@@ -1,9 +1,10 @@
 import { Agent, type AgentTool, type AgentEvent, type AgentToolResult } from "@mariozechner/pi-agent-core";
 import { Type } from "@sinclair/typebox";
 import { getLLMModel } from "@/lib/llm/provider";
-import { createBrowserTools } from "./tools";
+import { createBrowserTools, resetScreenshotCounter } from "./tools";
 import { SCRAPER_SYSTEM_PROMPT } from "./prompts";
 import type { Skill } from "@/lib/skills/types";
+import type { TaskEventBus } from "@/lib/queue/events";
 
 export type { AgentEvent };
 
@@ -33,9 +34,12 @@ function skillToolsToAgentTools(skillTools: Skill["tools"]): AgentTool[] {
 
 export function createScraperAgent(
   skill: Skill,
-  onEvent?: (event: AgentEvent) => void
+  onEvent?: (event: AgentEvent) => void,
+  taskId?: string,
+  eventBus?: TaskEventBus
 ) {
-  const browserTools = createBrowserTools();
+  if (taskId) resetScreenshotCounter();
+  const browserTools = createBrowserTools(taskId, eventBus);
   const extraTools = skillToolsToAgentTools(skill.tools);
   const tools = [...browserTools, ...extraTools];
 
@@ -46,7 +50,6 @@ export function createScraperAgent(
       tools,
     },
     getApiKey: async (provider: string) => {
-      // For custom providers, return the API key from env
       if (provider === process.env.LLM_PROVIDER) {
         return process.env.LLM_API_KEY;
       }

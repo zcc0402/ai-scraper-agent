@@ -1,6 +1,9 @@
 import { Type } from "@sinclair/typebox";
 import { mcpClient } from "@/lib/browser/mcp-client";
 import type { AgentTool, AgentToolResult } from "@mariozechner/pi-agent-core";
+import { writeFile, mkdir } from "fs/promises";
+import { join } from "path";
+import type { TaskEventBus } from "@/lib/queue/events";
 
 function makeResult(data: unknown): AgentToolResult<unknown> {
   return {
@@ -9,7 +12,46 @@ function makeResult(data: unknown): AgentToolResult<unknown> {
   };
 }
 
-export function createBrowserTools(): AgentTool[] {
+let screenshotCounter = 0;
+
+export function resetScreenshotCounter() {
+  screenshotCounter = 0;
+}
+
+async function captureScreenshot(
+  taskId: string,
+  toolName: string,
+  eventBus: TaskEventBus
+): Promise<void> {
+  try {
+    const result = await mcpClient.callTool("browser_screenshot");
+    const screenshotData = result as { data?: string };
+
+    if (screenshotData?.data) {
+      screenshotCounter++;
+      const dir = join(process.cwd(), "uploads", "screenshots", taskId);
+      await mkdir(dir, { recursive: true });
+      const buffer = Buffer.from(screenshotData.data, "base64");
+      const filename = String(screenshotCounter).padStart(3, "0") + ".png";
+      await writeFile(join(dir, filename), buffer);
+
+      eventBus.publish(taskId, {
+        type: "screenshot_taken",
+        index: screenshotCounter,
+        url: `/api/tasks/${taskId}/screenshots/${screenshotCounter}`,
+        toolName,
+        timestamp: Date.now(),
+      });
+    }
+  } catch (err) {
+    console.error("[tools] Failed to capture screenshot:", err);
+  }
+}
+
+export function createBrowserTools(
+  taskId?: string,
+  eventBus?: TaskEventBus
+): AgentTool[] {
   return [
     {
       name: "navigate",
@@ -18,6 +60,9 @@ export function createBrowserTools(): AgentTool[] {
       parameters: Type.Object({ url: Type.String() }),
       execute: async (_toolCallId: string, params: any) => {
         const result = await mcpClient.callTool("browser_navigate", { url: params.url });
+        if (taskId && eventBus) {
+          await captureScreenshot(taskId, "navigate", eventBus);
+        }
         return makeResult(result);
       },
     },
@@ -38,6 +83,9 @@ export function createBrowserTools(): AgentTool[] {
       parameters: Type.Object({ ref: Type.String() }),
       execute: async (_toolCallId: string, params: any) => {
         const result = await mcpClient.callTool("browser_click", { uid: params.ref });
+        if (taskId && eventBus) {
+          await captureScreenshot(taskId, "click", eventBus);
+        }
         return makeResult(result);
       },
     },
@@ -51,6 +99,9 @@ export function createBrowserTools(): AgentTool[] {
           uid: params.ref,
           value: params.value,
         });
+        if (taskId && eventBus) {
+          await captureScreenshot(taskId, "fill", eventBus);
+        }
         return makeResult(result);
       },
     },
@@ -73,6 +124,9 @@ export function createBrowserTools(): AgentTool[] {
       parameters: Type.Object({}),
       execute: async (_toolCallId: string) => {
         const result = await mcpClient.callTool("browser_screenshot");
+        if (taskId && eventBus) {
+          await captureScreenshot(taskId, "screenshot", eventBus);
+        }
         return makeResult(result);
       },
     },

@@ -26,20 +26,25 @@ export function startWorker() {
       await db.update(tasks).set({ status: "running" }).where(eq(tasks.id, taskId));
       taskEvents.publish(taskId, { type: "status", status: "running" });
 
-      const agent = createScraperAgent(skill, (event) => {
-        taskEvents.publish(taskId, event);
+      const agent = createScraperAgent(
+        skill,
+        (event) => {
+          taskEvents.publish(taskId, event);
 
-        const statusMap: Record<string, string> = {
-          turn_start: "planning",
-          tool_execution_start: "navigating",
-          tool_execution_end: "extracting",
-        };
-        if (statusMap[event.type]) {
-          db.update(tasks)
-            .set({ status: statusMap[event.type] as any })
-            .where(eq(tasks.id, taskId));
-        }
-      });
+          const statusMap: Record<string, string> = {
+            turn_start: "planning",
+            tool_execution_start: "navigating",
+            tool_execution_end: "extracting",
+          };
+          if (statusMap[event.type]) {
+            db.update(tasks)
+              .set({ status: statusMap[event.type] as any })
+              .where(eq(tasks.id, taskId));
+          }
+        },
+        taskId,
+        taskEvents
+      );
 
       await agent.prompt(userInput);
 
