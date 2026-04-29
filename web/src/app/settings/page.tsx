@@ -1,21 +1,30 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
+import { Loader2, Settings, Save } from "lucide-react";
+import { LLMSettings } from "@/components/settings/llm-settings";
+import { DisplaySettings } from "@/components/settings/display-settings";
+import { NotificationSettings } from "@/components/settings/notification-settings";
+import { DataSettings } from "@/components/settings/data-settings";
 
 export default function SettingsPage() {
   const [settings, setSettings] = useState<Record<string, any>>({});
   const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch("/api/settings")
       .then((r) => r.json())
-      .then(setSettings);
+      .then((data) => {
+        setSettings(data);
+        setLoading(false);
+      });
   }, []);
+
+  function updateSetting(key: string, value: string) {
+    setSettings((s) => ({ ...s, [key]: value }));
+  }
 
   async function handleSave() {
     setSaving(true);
@@ -27,45 +36,56 @@ export default function SettingsPage() {
     setSaving(false);
   }
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
   return (
-    <div className="max-w-2xl space-y-6">
-      <h1 className="text-2xl font-bold">设置</h1>
+    <div className="max-w-3xl mx-auto space-y-8">
+      {/* Header */}
+      <div>
+        <h1 className="text-2xl font-bold flex items-center gap-2">
+          <Settings className="h-6 w-6 text-primary" />
+          系统设置
+        </h1>
+        <p className="text-muted-foreground mt-1">
+          配置 AI Scraper 的各项参数
+        </p>
+      </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>LLM 配置</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <Label className="mb-2 block">Provider</Label>
-            <Input
-              value={settings.llm_provider || ""}
-              onChange={(e) => setSettings((s) => ({ ...s, llm_provider: e.target.value }))}
-              placeholder="google"
-            />
-          </div>
-          <div>
-            <Label className="mb-2 block">Model</Label>
-            <Input
-              value={settings.llm_model || ""}
-              onChange={(e) => setSettings((s) => ({ ...s, llm_model: e.target.value }))}
-              placeholder="gemini-2.5-flash"
-            />
-          </div>
-          <div>
-            <Label className="mb-2 block">API Key</Label>
-            <Input
-              type="password"
-              value={settings.llm_api_key || ""}
-              onChange={(e) => setSettings((s) => ({ ...s, llm_api_key: e.target.value }))}
-            />
-          </div>
-        </CardContent>
-      </Card>
+      {/* Settings Sections */}
+      <div className="space-y-6">
+        <LLMSettings settings={settings} onUpdate={updateSetting} />
+        <DisplaySettings settings={settings} onUpdate={updateSetting} />
+        <NotificationSettings settings={settings} onUpdate={updateSetting} />
+        <DataSettings />
+      </div>
 
-      <Button onClick={handleSave} disabled={saving}>
-        {saving ? <><Loader2 className="h-4 w-4 animate-spin mr-2" />保存中...</> : "保存设置"}
-      </Button>
+      {/* Save Button */}
+      <div className="sticky bottom-6 flex justify-end">
+        <Button
+          onClick={handleSave}
+          disabled={saving}
+          className="gap-2 shadow-lg"
+          size="lg"
+        >
+          {saving ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              保存中...
+            </>
+          ) : (
+            <>
+              <Save className="h-4 w-4" />
+              保存设置
+            </>
+          )}
+        </Button>
+      </div>
     </div>
   );
 }

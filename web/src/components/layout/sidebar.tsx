@@ -22,6 +22,7 @@ import {
   SidebarHeader,
   SidebarFooter,
 } from "@/components/ui/sidebar";
+import { UserNav } from "./user-nav";
 
 const navItems = [
   { title: "首页", url: "/", icon: Home },
@@ -69,8 +70,8 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <div className="px-4 py-2 text-xs text-muted-foreground">
-          AI Scraper Agent v1.0
+        <div className="px-3 py-2">
+          <UserNav />
         </div>
       </SidebarFooter>
     </Sidebar>

@@ -24,6 +24,7 @@
     "bullmq": "latest",
     "class-variance-authority": "latest",
     "clsx": "latest",
+    "date-fns": "^4.1.0",
     "drizzle-orm": "latest",
     "gray-matter": "latest",
     "ioredis": "latest",
