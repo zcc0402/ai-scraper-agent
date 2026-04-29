@@ -73,7 +73,17 @@ export function startWorker() {
       try {
         parsedResult = JSON.parse(result);
       } catch {
-        parsedResult = result;
+        // Try to extract JSON from markdown code blocks
+        const jsonMatch = result.match(/```(?:json)?\s*\n?([\s\S]*?)\n?\s*```/);
+        if (jsonMatch) {
+          try {
+            parsedResult = JSON.parse(jsonMatch[1].trim());
+          } catch {
+            parsedResult = result;
+          }
+        } else {
+          parsedResult = result;
+        }
       }
 
       const filePath = await exportData(
