@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Geist } from "next/font/google";
 import { cn } from "@/lib/utils";
-import { Navbar } from "@/components/layout/navbar";
+import { AppLayout } from "@/components/layout/app-layout";
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
   title: "AI Scraper Agent",
@@ -18,9 +18,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="zh-CN" className={cn("font-sans", geist.variable)}>
-      <body className="bg-[#0F172A] text-[#F8FAFC] antialiased">
-        <Navbar />
-        <main>{children}</main>
+      <body>
+        <AppLayout>{children}</AppLayout>
       </body>
     </html>
   );
