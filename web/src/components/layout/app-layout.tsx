@@ -2,7 +2,6 @@
 
 import { usePathname } from "next/navigation";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
-import { Separator } from "@/components/ui/separator";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppSidebar } from "./sidebar";
 import { UserNav } from "./user-nav";
@@ -26,10 +25,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       <SidebarProvider>
         <AppSidebar />
         <SidebarInset>
-          <header className="flex h-14 shrink-0 items-center gap-3 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4">
-            <SidebarTrigger className="h-8 w-8" />
-            <Separator orientation="vertical" className="h-5" />
-            <div className="flex-1" />
+          <header className="flex h-14 shrink-0 items-center justify-between border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4">
+            <SidebarTrigger className="h-8 w-8 hover:bg-muted rounded-md transition-colors" />
             <UserNav />
           </header>
           <main className="flex-1 overflow-auto">
