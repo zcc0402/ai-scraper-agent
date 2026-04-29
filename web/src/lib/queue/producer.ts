@@ -10,8 +10,10 @@ export const scrapeQueue = new Queue("scrape", { connection });
 export async function addScrapeJob(params: {
   taskId: string;
   userInput: string;
+  targetUrl?: string;
   skillName?: string;
   outputFormat?: string;
+  timeout?: number;
 }) {
   return scrapeQueue.add("scrape", params, {
     attempts: 2,

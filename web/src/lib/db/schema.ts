@@ -6,6 +6,7 @@ import {
 export const tasks = pgTable("tasks", {
   id: uuid("id").primaryKey().defaultRandom(),
   userInput: text("user_input").notNull(),
+  targetUrl: text("target_url"),
   skillName: text("skill_name"),
   status: varchar("status", {
     enum: [
@@ -20,6 +21,7 @@ export const tasks = pgTable("tasks", {
   outputFormat: varchar("output_format", {
     enum: ["json", "csv", "excel"],
   }).default("json"),
+  timeout: integer("timeout").default(300),
   errorMessage: text("error_message"),
   createdAt: timestamp("created_at").defaultNow(),
   completedAt: timestamp("completed_at"),

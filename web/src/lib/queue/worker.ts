@@ -23,11 +23,18 @@ export function startWorker() {
   const worker = new Worker(
     "scrape",
     async (job) => {
-      const { taskId, userInput, skillName, outputFormat } = job.data;
+      const { taskId, userInput, targetUrl, skillName, outputFormat } = job.data;
 
       console.log(`[worker] Processing task ${taskId}: "${userInput}"`);
 
-      const skill = skillRegistry.match(userInput);
+      // Build enhanced prompt with target URL context
+      const enhancedInput = targetUrl
+        ? `目标网址: ${targetUrl}\n\n任务: ${userInput}`
+        : userInput;
+
+      const skill = skillName
+        ? skillRegistry.get(skillName) || skillRegistry.match(userInput)
+        : skillRegistry.match(userInput);
       console.log(`[worker] Matched skill: ${skill.name}`);
 
       await db.update(tasks).set({ status: "running" }).where(eq(tasks.id, taskId));
@@ -53,7 +60,7 @@ export function startWorker() {
         taskEvents
       );
 
-      await agent.prompt(userInput);
+      await agent.prompt(enhancedInput);
 
       // Get the last assistant message as the result
       const messages = agent.state.messages;

@@ -22,7 +22,7 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   const body = await req.json();
-  const { userInput, outputFormat, skillName } = body;
+  const { userInput, targetUrl, outputFormat, skillName, timeout } = body;
 
   if (!userInput || typeof userInput !== "string") {
     return NextResponse.json({ error: "userInput is required" }, { status: 400 });
@@ -32,8 +32,10 @@ export async function POST(req: Request) {
     .insert(tasks)
     .values({
       userInput,
+      targetUrl: targetUrl || null,
       outputFormat: outputFormat || "json",
       skillName: skillName || null,
+      timeout: timeout || 300,
       status: "pending",
     })
     .returning();
@@ -41,8 +43,10 @@ export async function POST(req: Request) {
   await addScrapeJob({
     taskId: task.id,
     userInput,
+    targetUrl,
     skillName,
     outputFormat: outputFormat || "json",
+    timeout: timeout || 300,
   });
 
   return NextResponse.json(task);
