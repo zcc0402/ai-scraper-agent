@@ -3,6 +3,24 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useAgentEvents } from "@/hooks/use-agent-events";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ResultsTable } from "@/components/tasks/results-table";
+import { TaskTimeline } from "@/components/tasks/task-timeline";
+import { Download, FileJson, FileSpreadsheet, FileText, Loader2 } from "lucide-react";
+
+const statusVariant: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
+  pending: "secondary",
+  running: "default",
+  planning: "default",
+  navigating: "default",
+  extracting: "default",
+  completed: "default",
+  failed: "destructive",
+  cancelled: "outline",
+};
 
 const statusLabels: Record<string, string> = {
   pending: "等待中",
@@ -15,6 +33,12 @@ const statusLabels: Record<string, string> = {
   completed: "已完成",
   failed: "失败",
   cancelled: "已取消",
+};
+
+const formatIcons: Record<string, React.ReactNode> = {
+  json: <FileJson className="h-4 w-4" />,
+  csv: <FileText className="h-4 w-4" />,
+  excel: <FileSpreadsheet className="h-4 w-4" />,
 };
 
 export default function TaskDetailPage() {
@@ -31,58 +55,98 @@ export default function TaskDetailPage() {
 
   if (!task) {
     return (
-      <div className="min-h-screen bg-[#0F172A] flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-2 border-[#22C55E] border-t-transparent rounded-full" />
+      <div className="flex items-center justify-center py-24">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       </div>
     );
   }
 
+  const resultData = task.resultData;
+  const isArray = Array.isArray(resultData);
+  const outputFile = task.outputFile;
+
   return (
-    <div className="min-h-screen bg-[#0F172A] py-12 px-4">
-      <div className="max-w-4xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold text-[#F8FAFC]">任务详情</h1>
-          <span className={`px-3 py-1.5 rounded-md text-sm font-medium ${
-            taskStatus === "completed" ? "bg-[#22C55E]/10 text-[#22C55E]" :
-            taskStatus === "failed" ? "bg-[#EF4444]/10 text-[#EF4444]" :
-            "bg-[#3B82F6]/10 text-[#3B82F6]"
-          }`}>
-            {statusLabels[taskStatus] || taskStatus}
-          </span>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">任务详情</h1>
+          <p className="text-muted-foreground text-sm mt-1">
+            {new Date(task.createdAt).toLocaleString("zh-CN")}
+          </p>
+        </div>
+        <Badge variant={statusVariant[taskStatus] || "secondary"}>
+          {statusLabels[taskStatus] || taskStatus}
+        </Badge>
+      </div>
+
+      {/* Task Description */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">任务描述</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p>{task.userInput}</p>
+        </CardContent>
+      </Card>
+
+      {/* Main Content: Timeline + Results */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left: Timeline */}
+        <div className="lg:col-span-1">
+          <TaskTimeline events={events} taskStatus={taskStatus} />
         </div>
 
-        <div className="bg-[#1E293B] border border-[#475569] rounded-lg p-6 mb-6">
-          <h2 className="text-lg font-semibold text-[#F8FAFC] mb-4">任务描述</h2>
-          <p className="text-[#94A3B8]">{task.userInput}</p>
-        </div>
+        {/* Right: Results */}
+        <div className="lg:col-span-2 space-y-6">
+          {resultData && (
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-base">结果数据</CardTitle>
+                  {outputFile && (
+                    <Button variant="outline" size="sm" asChild>
+                      <a href={`/api/tasks/${taskId}/download`}>
+                        <Download className="h-4 w-4 mr-2" />
+                        下载 {task.outputFormat?.toUpperCase() || "文件"}
+                        {formatIcons[task.outputFormat || "json"]}
+                      </a>
+                    </Button>
+                  )}
+                </div>
+              </CardHeader>
+              <CardContent>
+                <Tabs defaultValue={isArray ? "table" : "json"}>
+                  <TabsList>
+                    {isArray && <TabsTrigger value="table">表格</TabsTrigger>}
+                    <TabsTrigger value="json">JSON</TabsTrigger>
+                  </TabsList>
+                  {isArray && (
+                    <TabsContent value="table">
+                      <ResultsTable data={resultData} />
+                    </TabsContent>
+                  )}
+                  <TabsContent value="json">
+                    <pre className="bg-muted p-4 rounded-md overflow-auto max-h-96 text-sm">
+                      {JSON.stringify(resultData, null, 2)}
+                    </pre>
+                  </TabsContent>
+                </Tabs>
+              </CardContent>
+            </Card>
+          )}
 
-        <div className="bg-[#1E293B] border border-[#475569] rounded-lg p-6 mb-6">
-          <h2 className="text-lg font-semibold text-[#F8FAFC] mb-4">Agent 执行过程</h2>
-          <div className="space-y-3">
-            {events.map((event, i) => (
-              <div key={i} className="flex items-start gap-3 text-sm">
-                <span className="font-mono text-xs text-[#64748B] w-24 shrink-0">
-                  {event.type}
-                </span>
-                <span className="text-[#94A3B8]">
-                  {event.title || event.description || JSON.stringify(event).slice(0, 100)}
-                </span>
-              </div>
-            ))}
-            {events.length === 0 && (
-              <p className="text-[#64748B]">等待执行...</p>
-            )}
-          </div>
+          {task.errorMessage && (
+            <Card className="border-destructive">
+              <CardHeader>
+                <CardTitle className="text-base text-destructive">错误信息</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm">{task.errorMessage}</p>
+              </CardContent>
+            </Card>
+          )}
         </div>
-
-        {task.resultData && (
-          <div className="bg-[#1E293B] border border-[#475569] rounded-lg p-6">
-            <h2 className="text-lg font-semibold text-[#F8FAFC] mb-4">结果数据</h2>
-            <pre className="bg-[#0F172A] p-4 rounded-lg overflow-auto max-h-96 text-sm text-[#94A3B8]">
-              {JSON.stringify(task.resultData, null, 2)}
-            </pre>
-          </div>
-        )}
       </div>
     </div>
   );
