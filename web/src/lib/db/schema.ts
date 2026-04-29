@@ -58,6 +58,14 @@ export const executionHistory = pgTable("execution_history", {
   executedAt: timestamp("executed_at").defaultNow(),
 });
 
+export const taskEvents = pgTable("task_events", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  taskId: uuid("task_id").references(() => tasks.id).notNull(),
+  type: varchar("type").notNull(),
+  data: jsonb("data").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 export const settings = pgTable("settings", {
   key: text("key").primaryKey(),
   value: jsonb("value").notNull(),

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 export interface AgentEvent {
   type: string;
@@ -23,7 +23,29 @@ export function useAgentEvents(taskId: string) {
   const [events, setEvents] = useState<AgentEvent[]>([]);
   const [taskStatus, setTaskStatus] = useState<string>("pending");
 
+  // Load persisted events from history API
+  const loadHistory = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/tasks/${taskId}/history`);
+      if (!res.ok) return;
+      const data = await res.json();
+      if (data.events?.length > 0) {
+        setEvents(data.events);
+        // Derive status from last event
+        const last = data.events[data.events.length - 1];
+        if (last.type === "completed") setTaskStatus("completed");
+        else if (last.type === "failed") setTaskStatus("failed");
+      }
+    } catch {
+      // ignore
+    }
+  }, [taskId]);
+
   useEffect(() => {
+    // Always try loading history first for persisted events
+    loadHistory();
+
+    // Then connect to SSE for live updates
     const source = new EventSource(`/api/tasks/${taskId}/events`);
 
     source.onmessage = (e) => {
@@ -47,7 +69,7 @@ export function useAgentEvents(taskId: string) {
     };
 
     return () => source.close();
-  }, [taskId]);
+  }, [taskId, loadHistory]);
 
   return { events, taskStatus };
 }

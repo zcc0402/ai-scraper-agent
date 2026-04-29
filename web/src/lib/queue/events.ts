@@ -1,3 +1,6 @@
+import { db } from "@/lib/db";
+import { taskEvents as taskEventsTable } from "@/lib/db/schema";
+
 export type TaskEvent = {
   type: string;
   [key: string]: unknown;
@@ -20,6 +23,16 @@ export class TaskEventBus {
   }
 
   publish(taskId: string, event: TaskEvent): void {
+    // Persist to database (fire-and-forget)
+    db.insert(taskEventsTable)
+      .values({
+        taskId,
+        type: event.type,
+        data: event,
+      })
+      .catch((err) => console.error("[events] Failed to persist event:", err));
+
+    // Notify live listeners
     const listeners = this.listeners.get(taskId);
     if (listeners) {
       for (const listener of listeners) {

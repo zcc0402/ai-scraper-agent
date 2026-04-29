@@ -94,14 +94,18 @@ export function AgentWorkspace({ taskId }: AgentWorkspaceProps) {
         setElapsed(Math.floor((Date.now() - start) / 1000));
       }, 1000);
       return () => clearInterval(interval);
-    } else if (task?.createdAt && task?.completedAt) {
-      // For completed tasks, show final duration
-      const duration = Math.floor(
+    }
+  }, [taskStatus, task?.createdAt]);
+
+  // Set elapsed time for completed/failed tasks once task data loads
+  useEffect(() => {
+    if (task?.createdAt && task?.completedAt) {
+      const duration = Math.abs(Math.floor(
         (new Date(task.completedAt).getTime() - new Date(task.createdAt).getTime()) / 1000
-      );
+      ));
       setElapsed(duration);
     }
-  }, [taskStatus, task?.createdAt, task?.completedAt]);
+  }, [task?.createdAt, task?.completedAt]);
 
   const formatElapsed = (seconds: number) => {
     const m = Math.floor(seconds / 60);
